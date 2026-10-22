@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHOP MASTER：ゼロからの店舗経営</title>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #111111;
+      --border-color: #222222;
+      --accent-color: #f5f5f5;
+      --button-hover: #eeeeee;
+      --danger-color: #d9534f;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      line-height: 1.6;
+    }
+
+    #app-container {
+      width: 100%;
+      max-width: 480px;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      position: relative;
+    }
+
+    /* ヘッダー・ステータス */
+    .header-box {
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      background-color: #fafafa;
+    }
+
+    .date-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 12px;
+      font-size: 0.88rem;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* メインコンテンツ */
+    .story-card {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 16px;
+      background-color: #fff;
+    }
+
+    .story-title {
+      font-size: 1.05rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .story-text {
+      font-size: 0.93rem;
+      margin-bottom: 12px;
+      white-space: pre-line;
+    }
+
+    /* 選択肢ボタン */
+    .choices-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .choice-btn {
+      background-color: #fff;
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: left;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: var(--text-color);
+    }
+
+    .choice-btn:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-1px);
+    }
+
+    .choice-btn:active {
+      transform: translateY(0);
+    }
+
+    /* アドバイザー（ネコ） */
+    .advisor-box {
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      background-color: #fcfcfc;
+      font-size: 0.85rem;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .advisor-avatar {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .advisor-text {
+      flex: 1;
+    }
+
+    /* モーダル */
+    .modal-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      padding: 20px;
+      z-index: 100;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    .close-btn {
+      margin-top: 16px;
+      width: 100%;
+      padding: 10px;
+      background: var(--text-color);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .mode-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      border: 1px solid var(--border-color);
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-container">
+  <!-- ヘッダー・ステータス -->
+  <div class="header-box">
+    <div class="date-title">
+      <span id="date-display">1年目 4月1日 (月)</span>
+      <span id="mode-display" class="mode-tag">未設定</span>
+    </div>
+    <div class="status-grid">
+      <div class="status-item"><span>💖 体力:</span> <span id="hp-display">20/20</span></div>
+      <div class="status-item"><span>👛 現金:</span> <span id="cash-display">50,000円</span></div>
+      <div class="status-item"><span>🏦 口座:</span> <span id="bank-display">0円</span></div>
+      <div class="status-item"><span>⏳ 未入金:</span> <span id="pending-display">0円</span></div>
+      <div class="status-item"><span>📄 計画書:</span> <span id="plan-display">0%</span></div>
+      <div class="status-item"><span>🏛️ 信頼度:</span> <span id="trust-display">0pt</span></div>
+    </div>
+  </div>
+
+  <!-- メインシナリオ -->
+  <div class="story-card">
+    <div class="story-title" id="story-title">☕ 主人公の選択</div>
+    <div class="story-text" id="story-text">loading...</div>
+  </div>
+
+  <!-- 選択肢 -->
+  <div class="choices-container" id="choices-container"></div>
+
+  <!-- アドバイザーネコ -->
+  <div class="advisor-box">
+    <div class="advisor-avatar">🐱</div>
+    <div class="advisor-text">
+      <strong>税理士ネコのアドバイス:</strong><br>
+      <span id="advisor-text">「自分のバックボーンを選ぶのにゃ！選択によって融資の難易度が大きく変わるぞ」</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ゲーム状態
+  let state = {
+    day: 1,
+    month: 4,
+    year: 1,
+    mode: '', // 'standard', 'experienced', 'hard'
+    hp: 20,
+    maxHp: 20,
+    cash: 50000,
+    bank: 0,
+    pendingCard: 0,
+    planProgress: 0,
+    trust: 0,
+    carLoan: 0,
+    isOver: false
+  };
+
+  function updateUI() {
+    document.getElementById('date-display').innerText = `${state.year}年目 ${state.month}月${state.day}日`;
+    document.getElementById('hp-display').innerText = `${state.hp}/${state.maxHp}`;
+    document.getElementById('cash-display').innerText = `${state.cash.toLocaleString()}円`;
+    document.getElementById('bank-display').innerText = `${state.bank.toLocaleString()}円`;
+    document.getElementById('pending-display').innerText = `${state.pendingCard.toLocaleString()}円`;
+    document.getElementById('plan-display').innerText = `${state.planProgress}%`;
+    document.getElementById('trust-display').innerText = `${state.trust}pt`;
+
+    const modeNames = { standard: '正社員・未経験', experienced: '正社員・経験者', hard: '💀 ハードモード' };
+    document.getElementById('mode-display').innerText = modeNames[state.mode] || '未設定';
+  }
+
+  // シーン定義
+  const scenes = {
+    // 主人公設定の選択
+    start: {
+      title: "☕ 主人公のバックボーン（前職と経験）選択",
+      text: "店舗経営を目指すあなた。創業前のあなたの「現在の職業」と「経験」を選んでください。\nこれが公庫（国金）での融資審査に大きな影響を与えます。",
+      advisor: "「ハードモードは100%融資不可の激辛ルートだにゃ！泥臭い自力経営を試したいなら挑んでみるのにゃ！」",
+      choices: [
+        {
+          text: "👔 【標準】異業種の正社員（カフェ未経験）\n→ コツコツ貯金あり・個人の信用高・経験なし",
+          next: 'setup_standard'
+        },
+        {
+          text: "🍳 【経験者】飲食店の正社員店長（経験7年）\n→ 同業種での実績あり・融資満額を引き出しやすい",
+          next: 'setup_experienced'
+        },
+        {
+          text: "💀 【ハードモード】完全未経験・無職（融資100%不可）\n→ 信用ゼロ・融資0円確定！50万だけで生き残る逆転ルート",
+          next: 'setup_hard'
+        }
+      ]
+    },
+
+    setup_standard: {
+      action: () => {
+        state.mode = 'standard';
+        state.trust = 30;
+        state.planProgress = 10;
+      },
+      title: "📄 1年目 4月1日：脱サラ創業の決意",
+      text: "あなたはIT企業の正社員。今月末で退職し、念願のカフェを開業する決意をした。\n手元資金は50万円。公庫（国金）から300万円の融資を引き出すため、創業計画書の作成を始めよう。",
+      advisor: "「未経験の正社員スタートだな！『なぜ未経験で始めるのか』の納得できる動機がカギになるぞ」",
+      choices: [
+        { text: "創業計画書の作成に取りかかる（4月10日へ）", next: 'day10' }
+      ]
+    },
+
+    setup_experienced: {
+      action: () => {
+        state.mode = 'experienced';
+        state.trust = 60;
+        state.planProgress = 30;
+      },
+      title: "🍳 1年目 4月1日：独立開業の決意",
+      text: "カフェで7年間店長を務めたあなたは、自分の店を持つため独立を決意した。\n手元資金50万円に加え、現場での確かな実績がある。公庫からの満額融資を狙おう。",
+      advisor: "「7年の現場経験は最高の武器だにゃ！計画書に現場の数字をリアルに落とし込めば満額融資も近いぞ」",
+      choices: [
+        { text: "創業計画書の作成に取りかかる（4月10日へ）", next: 'day10' }
+      ]
+    },
+
+    setup_hard: {
+      action: () => {
+        state.mode = 'hard';
+        state.trust = 0;
+        state.planProgress = 0;
+      },
+      title: "💀 1年目 4月1日：無職・実績ゼロからの挑戦",
+      text: "前職をすでに退職し無職。飲食店経験もゼロ。\n手元にあるのは『50万円』の現金のみ。\n世間の目は甘くない。銀行も国金も、あなたに1円も貸してはくれないだろう。",
+      advisor: "「完全に退路が断たれているにゃ…！融資ゼロからどうやって自力でキャッシュを作るかが勝負だぞ！」",
+      choices: [
+        { text: "あがきとしてダメ元で公庫に申し込んでみる", next: 'day10' },
+        { text: "融資を端から諦め、50万円でできる間借り交渉へ動く", next: 'hard_start' }
+      ]
+    },
+
+    // 4月10日：計画書作成
+    day10: {
+      title: "📑 1年目 4月10日：創業計画書の作成",
+      text: "公庫（国金）へ提出する計画書を作成中。\n自己資金50万円に対し、融資希望額300万円を設定した。\n『自己資金の準備プロセス』をどうアピールする？",
+      advisor: "「急に振り込まれた50万は『見せ金』と疑われるにゃ。毎月コツコツ貯めた通帳を見せるのが鉄則だぞ」",
+      choices: [
+        {
+          text: "🅰️ 毎月積み立てた通帳の履歴を見せる（信頼度+20 / 計画書+30%）",
+          action: () => { state.trust += 20; state.planProgress += 30; },
+          next: 'day20'
+        },
+        {
+          text: "🅱️ 売上見通しを強気の『月商200万』に書き換える（信頼度-10 / 計画書+10%）",
+          action: () => { state.trust -= 10; state.planProgress += 10; },
+          next: 'day20'
+        }
+      ]
+    },
+
+    // 4月20日：面談前日
+    day20: {
+      title: "🏛️ 1年目 4月20日：面談前日の決断",
+      text: "いよいよ明日は公庫の融資担当者との対面面談だ。\n現在の信頼度: " + state.trust + "pt / 計画書完成度: " + state.planProgress + "%\n面談へ向けた最後の準備は？",
+      advisor: "「面談では『万が一赤字になった時の返済原資』を聞かれるぞ。覚悟とロジックを示せるかだにゃ！」",
+      choices: [
+        {
+          text: "🅰️ 間借り営業での『3ヶ月間のテスト売上ノート』を持参（信頼度+20）",
+          action: () => { state.trust += 20; },
+          next: 'interview'
+        },
+        {
+          text: "🅱️ 『情熱』だけで押し切る練習をする（信頼度-10）",
+          action: () => { state.trust -= 10; },
+          next: 'interview'
+        }
+      ]
+    },
+
+    // 面談ボス戦
+    interview: {
+      title: "⚖️ 1年目 4月25日：【決戦】公庫の融資面談",
+      text: "面談室。メガネをかけた担当者が鋭い目であなたを見る。\n「計画書を拝見しました。で、万が一赤字が続いた場合、どうやって毎月5万円の返済を続けるおつもりですか？」",
+      advisor: "「ここが正念場だにゃ！逃げずに具体的なリスク管理を答えられるか！？」",
+      choices: [
+        {
+          text: "🅰️ 『最悪の場合、夜間の単発アルバイトで返済原資を100%確保します』",
+          action: () => { state.trust += 20; },
+          next: 'judge'
+        },
+        {
+          text: "🅱️ 『私のカフェは絶対にバズるので赤字にはなりません！』",
+          action: () => { state.trust -= 30; },
+          next: 'judge'
+        }
+      ]
+    },
+
+    // 4月30日：融資判定
+    judge: {
+      action: () => {
+        // ハードモードは無条件で否決
+        if (state.mode === 'hard') {
+          state.bank = 0;
+        } else if (state.trust >= 60) {
+          state.bank = 3000000; // 満額
+        } else if (state.trust >= 30) {
+          state.bank = 1000000; // 減額
+        } else {
+          state.bank = 0; // 否決
+        }
+      },
+      title: "🏦 1年目 4月30日：運命の融資判定発表",
+      text: "口座の通帳を記帳しに銀行へ向かった。\n果たして公庫からの着金はあるか……！？",
+      advisor: "「結果が出たにゃ！手元のキャッシュに合わせて今後の出店戦略を組み立てるぞ！」",
+      choices: [
+        {
+          text: "通帳を確認する（5月1日へ）",
+          next: 'may1'
+        }
+      ]
+    },
+
+    // 5月1日：結果と分岐
+    may1: {
+      title: "📅 1年目 5月1日：新たなスタート",
+      text: () => {
+        if (state.bank >= 3000000) {
+          return `🎉 【融資大成功！】\n公庫から【300万円】が口座に着金しました！\n自己資金50万と合わせて合計350万円のキャッシュを獲得！\n念願の「路面店・居抜き物件」の取得へ向けて動きます！`;
+        } else if (state.bank >= 1000000) {
+          return `⚠️ 【一部可決（減額融資）】\n公庫から【100万円】のみ着金しました。\n希望額には届きませんでしたが、合計150万円で中古機材を集め、小規模な店舗づくりを目指します！`;
+        } else {
+          return `💀 【融資・完全否決（0円）】\n審査落ち……口座への着金はゼロ！手元資金は50万円のまま。\n融資に頼る道は絶たれた。夜間バーの「完全歩合・間借りカフェ」として泥臭く生きていくしかない！`;
+        }
+      },
+      advisor: "「ここからが本当の勝負だにゃ！毎月口座から引き落とされる返済や家賃との戦いが始まるぞ！」",
+      choices: [
+        { text: "5月営業スタート！", next: 'hard_start' }
+      ]
+    },
+
+    // ハードモード／極小資金ルート
+    hard_start: {
+      title: "☕ 1年目 5月15日：手元50万円の間借り生存戦略",
+      text: "手元現金は残り40万円（契約料で10万消費）。\n夜間バーの昼間だけを借り、家賃は「売上の20%歩合」で交渉成立。\nワンオペで1日14時間労働。体力が削られていくが、どう集客する？",
+      advisor: "「お金がないならSNSと知恵を使うにゃ！原価率15%のバズメニューを作って現金を残すのだ！」",
+      choices: [
+        {
+          text: "🅰️ 原価率15%の『濃厚抹茶バスクチーズケーキ』をSNSでバズらせる（現金+15万 / 体力-4）",
+          action: () => { state.cash += 150000; state.hp -= 4; },
+          next: 'hard_june'
+        },
+        {
+          text: "🅱️ 割引クーポンを配って客数を稼ぐ（現金+3万 / 体力-2）",
+          action: () => { state.cash += 30000; state.hp -= 2; },
+          next: 'hard_june'
+        }
+      ]
+    },
+
+    hard_june: {
+      title: "🌧️ 1年目 6月20日：梅雨の試練と体力の限界",
+      text: "長雨で客足が激減。手持ち現金: " + state.cash.toLocaleString() + "円。\nワンオペの連続で体力が限界（" + state.hp + "/20）に近づいている。\n今夜、深夜バイトに行けば即金で2万円稼げるが……",
+      advisor: "「体力が0になると倒れて入院費（資金激減）がかかるにゃ！無理は禁物だぞ！」",
+      choices: [
+        {
+          text: "🅰️ 無理をして深夜バイトに行く（現金+2万円 / 体力-5）",
+          action: () => {
+            state.cash += 20000;
+            state.hp -= 5;
+            if (state.hp <= 0) return 'gameover_hp';
+          },
+          next: 'hard_july'
+        },
+        {
+          text: "🅱️ 今夜はしっかり寝て体力を回復させる（体力+6）",
+          action: () => { state.hp = Math.min(20, state.hp + 6); },
+          next: 'hard_july'
+        }
+      ]
+    },
+
+    hard_july: {
+      title: "☀️ 1年目 7月：自力蓄積と居抜き物件の噂",
+      text: "泥臭い間借り営業を続け、手持ち現金が【120万円】まで貯まった！\nそこへ知人から噂が入る。\n『近所の老舗喫茶店が閉店予定で、造作譲渡料タダ（0円）で引き継ぎ手を探している』",
+      advisor: "「きたニャーー！融資が引けなくても、自力で稼いだ120万円と0円物件があれば実店舗が持てるぞ！」",
+      choices: [
+        { text: "0円居抜き物件の交渉へ向かう！（実店舗獲得ルートへ）", next: 'hard_success' }
+      ]
+    },
+
+    hard_success: {
+      title: "🏆 ハードモード第1関門突破！",
+      text: "融資ゼロ・無職・経験なしの絶望から、50万円を120万円に増やし、念願の【実店舗オーナー】の権利を自力で勝ち取った！\nここから2年目へ向けた多店舗化・自動化への道が始まる！",
+      advisor: "「素晴らしいにゃ！失敗を架空で終わらせ、自力で成り上がる最高のノウハウが身についたぞ！」",
+      choices: [
+        { text: "最初から別のルートを遊んでみる", next: 'start' }
+      ]
+    },
+
+    gameover_hp: {
+      title: "💀 GAME OVER：過労倒産",
+      text: "無理なワンオペと深夜バイトの連続で、あなたは店内で倒れて救急搬送された。\n入院費用で手元の現金が底をつき、営業継続が不可能になりました……。",
+      advisor: "「経営者の体調管理も重要な仕事だにゃ。次は体力を残しながら仕組みで稼ぐのだ！」",
+      choices: [
+        { text: "🔄 もう一度挑戦する", next: 'start' }
+      ]
+    }
+  };
+
+  function renderScene(sceneKey) {
+    const scene = scenes[sceneKey];
+    if (!scene) return;
+
+    if (scene.action) scene.action();
+
+    updateUI();
+
+    document.getElementById('story-title').innerText = typeof scene.title === 'function' ? scene.title() : scene.title;
+    document.getElementById('story-text').innerText = typeof scene.text === 'function' ? scene.text() : scene.text;
+    document.getElementById('advisor-text').innerText = scene.advisor || '';
+
+    const choicesContainer = document.getElementById('choices-container');
+    choicesContainer.innerHTML = '';
+
+    scene.choices.forEach(choice => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerText = choice.text;
+      btn.onclick = () => {
+        if (choice.action) choice.action();
+        renderScene(choice.next);
+      };
+      choicesContainer.appendChild(btn);
+    });
+  }
+
+  // 初期化
+  renderScene('start');
+</script>
+</body>
+</html>
