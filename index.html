@@ -71,6 +71,19 @@
       justify-content: space-between;
     }
 
+    /* ミニカレンダー風バー */
+    .calendar-bar {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px 10px;
+      background: #fdfdfd;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     /* メインコンテンツ */
     .story-card {
       border: 1.5px solid var(--border-color);
@@ -121,7 +134,7 @@
       transform: translateY(-1px);
     }
 
-    /* アドバイザー（有料ネコ） */
+    /* アドバイザーネコ */
     .advisor-box {
       border: 1px dashed var(--border-color);
       border-radius: 8px;
@@ -155,7 +168,7 @@
 
     .advisor-note {
       font-size: 0.75rem;
-      color: #666;
+      color: #555;
       margin-top: 8px;
       border-top: 1px dotted #ccc;
       padding-top: 4px;
@@ -246,11 +259,15 @@
       <span id="date-display">1年目 4月1日</span>
       <span id="mode-display" class="mode-tag">未設定</span>
     </div>
+    <!-- カレンダーインジケーター -->
+    <div class="calendar-bar">
+      <span>🗓️ カレンダー進行状況:</span>
+      <strong id="calendar-text">4月上旬（準備期間）</strong>
+    </div>
     <div class="status-grid">
       <div class="status-item"><span>💖 体力:</span> <span id="hp-display">20/20</span></div>
       <div class="status-item"><span>👛 現金:</span> <span id="cash-display">100,000円</span></div>
       <div class="status-item"><span>🏦 口座:</span> <span id="bank-display">500,000円</span></div>
-      <div class="status-item"><span>⏳ 未入金:</span> <span id="pending-display">0円</span></div>
       <div class="status-item"><span>📄 計画書:</span> <span id="plan-display">0%</span></div>
       <div class="status-item"><span>🏛️ 信頼度:</span> <span id="trust-display">0pt</span></div>
     </div>
@@ -265,7 +282,7 @@
   <!-- 選択肢 -->
   <div class="choices-container" id="choices-container"></div>
 
-  <!-- 有料アドバイザーネコ -->
+  <!-- 税理士ネコのアドバイス -->
   <div class="advisor-box">
     <div class="advisor-header">
       <span>🐱 税理士ネコのアドバイス</span>
@@ -275,7 +292,7 @@
       <button class="advisor-btn" onclick="buyAdvice()">2,000円払ってアドバイスを聞く</button>
     </div>
     <div class="advisor-note">
-      ※実際の店舗経営では、月額2万〜3万円で税理士と顧問契約を結ぶことで、確実な確定申告・節税・公庫融資のサポートが受けられます。
+      ※顧問契約の相場：月額平均3万〜4万円（年間・決算料込みで約40万〜50万円）。融資や資金繰り対策にはプロのサポートが不可欠だニャ！
     </div>
   </div>
 </div>
@@ -286,24 +303,26 @@
     day: 1,
     month: 4,
     year: 1,
-    mode: '', // 'standard', 'experienced', 'hard'
+    calendarPhase: '4月上旬：準備期',
+    mode: '', 
     hp: 20,
     maxHp: 20,
     cash: 100000,   // 手持ち現金 10万円
     bank: 500000,   // 銀行口座 50万円
-    pendingCard: 0,
     planProgress: 0,
     trust: 0,
-    hasTestNote: false, // 伏線フラグ
+    hasTestNote: false,
+    loanType: 'seisaku', // 'seisaku' or 'bank'
+    quoteType: '中古300万', // '新品500万' or '中古300万'
     currentSceneKey: 'start'
   };
 
   function updateUI() {
     document.getElementById('date-display').innerText = `${state.year}年目 ${state.month}月${state.day}日`;
+    document.getElementById('calendar-text').innerText = state.calendarPhase;
     document.getElementById('hp-display').innerText = `${state.hp}/${state.maxHp}`;
     document.getElementById('cash-display').innerText = `${state.cash.toLocaleString()}円`;
     document.getElementById('bank-display').innerText = `${state.bank.toLocaleString()}円`;
-    document.getElementById('pending-display').innerText = `${state.pendingCard.toLocaleString()}円`;
     document.getElementById('plan-display').innerText = `${state.planProgress}%`;
     document.getElementById('trust-display').innerText = `${state.trust}pt`;
 
@@ -311,7 +330,6 @@
     document.getElementById('mode-display').innerText = modeNames[state.mode] || '未設定';
   }
 
-  // 有料アドバイス処理
   function buyAdvice() {
     if (state.cash < 2000) {
       alert("手持ちの現金が足りません！");
@@ -322,7 +340,7 @@
 
     const scene = scenes[state.currentSceneKey];
     const body = document.getElementById('advisor-body');
-    body.innerHTML = `<p style="color: #111; font-weight: bold;">🐱 「${scene.adviceText || '基本に忠実に実質的な数字で語るのだニャ！'}」</p>`;
+    body.innerHTML = `<p style="color: #111; font-weight: bold;">🐱 「${scene.adviceText || '数字の根拠と自己資金の動線を明確にするのだニャ！'}」</p>`;
   }
 
   function resetAdviceBox() {
@@ -333,12 +351,11 @@
     `;
   }
 
-  // 通帳モック表示
-  function showPassbook(line1, line2, nextScene) {
+  function showPassbook(line1, nextScene) {
     const modal = document.getElementById('passbook-modal');
     const content = document.getElementById('passbook-content');
     content.innerHTML = `
-      <div class="passbook-line"><span>04/01 残高スライド</span><span>￥${(500000).toLocaleString()}</span></div>
+      <div class="passbook-line"><span>前月繰越</span><span>￥${(500000).toLocaleString()}</span></div>
       <div class="passbook-line" style="color: blue; font-weight: bold;"><span>${line1.label}</span><span>￥${line1.amount.toLocaleString()}</span></div>
       <div class="passbook-line" style="font-weight: bold; border-top: 1px solid #333;"><span>差引残高</span><span>￥${state.bank.toLocaleString()}</span></div>
     `;
@@ -356,125 +373,137 @@
   // シーン定義
   const scenes = {
     start: {
-      title: "☕ 主人公のバックボーン（前職と経験）選択",
-      text: "店舗経営を目指すあなた。創業前のあなたの「現在の職業」と「経験」を選んでください。\n手持ち現金は財布に10万円、銀行口座に50万円が入っています。\n選択によって公庫（国金）での融資審査難易度が大きく変わります。",
-      adviceText: "ハードモードは融資不可の激辛ルートだニャ！電車代やカフェ代で手持ちの現金が減っていくリアルな世界へようこそだニャ！",
+      title: "☕ 主人公のバックボーン選択",
+      text: "店舗経営を目指すあなた。創業前のあなたの「現在の職業」と「経験」を選んでください。\n手持ち現金は財布に10万円、銀行口座に50万円が入っています。\n選択によって融資審査の難易度が大きく変わります。",
+      adviceText: "ハードモードは融資不可の激辛ルートだニャ！電車代やカフェ代で手持ち現金が減っていくリアルな世界だぞ！",
       choices: [
-        {
-          text: "👔 【標準】異業種の正社員（カフェ未経験）\n（コツコツ貯蓄あり・個人の信用高・実務経験なし）",
-          next: 'setup_standard'
-        },
-        {
-          text: "🍳 【経験者】飲食店の正社員店長（経験7年）\n（同業種での確かな実績あり・融資で圧倒的に有利）",
-          next: 'setup_experienced'
-        },
-        {
-          text: "💀 【ハードモード】完全未経験・無職（融資100%不可）\n（信用ゼロ・融資0円確定！自力で現金を残す逆転ルート）",
-          next: 'setup_hard'
-        }
+        { text: "👔 【標準】異業種の正社員（カフェ未経験）\n（コツコツ貯蓄・信用高・実務経験なし）", next: 'setup_standard' },
+        { text: "🍳 【経験者】飲食店の正社員店長（経験7年）\n（同業種での確かな実績あり・融資で有利）", next: 'setup_experienced' },
+        { text: "💀 【ハードモード】完全未経験・無職（融資100%不可）\n（信用ゼロ・融資0円確定！自力で現金を残す逆転ルート）", next: 'setup_hard' }
       ]
     },
 
     setup_standard: {
-      action: () => { state.mode = 'standard'; state.trust = 30; state.planProgress = 10; },
+      action: () => { state.mode = 'standard'; state.trust = 30; state.planProgress = 10; state.calendarPhase = '4月上旬：計画策定'; },
       title: "📄 1年目 4月1日：脱サラ創業の決意",
-      text: "あなたは正社員。今月末で退職し、念願のカフェを開業する決意をした。\n手持ちの現金は10万円、口座には自己資金の50万円。\n公庫（国金）から300万円の融資を引き出すため、創業計画書の作成を始めよう。",
-      adviceText: "未経験の正社員スタートだな！『なぜ今カフェなのか』の説得力のある動機が必要だぞ！",
-      choices: [{ text: "創業計画書の作成に取りかかる（4月10日へ）", next: 'day10' }]
+      text: "あなたは正社員。今月末で退職し、念願のカフェを開業する決意をした。\n手持ち現金10万、口座50万。\nどこから融資を引っ張るか、最初に選ぼう。",
+      adviceText: "初めての創業なら、無担保・無保証人で借りられる『日本政策金融公庫（セイサク）』が王道だニャ！",
+      choices: [
+        { text: "🏦 日本政策金融公庫（セイサク）に申し込むルートへ", action: () => { state.loanType = 'seisaku'; }, next: 'day10' },
+        { text: "🏛️ 地元の地方銀行（要預金実績・税理士紹介）に挑むルートへ", action: () => { state.loanType = 'bank'; state.trust -= 10; }, next: 'day10' }
+      ]
     },
 
     setup_experienced: {
-      action: () => { state.mode = 'experienced'; state.trust = 60; state.planProgress = 30; },
+      action: () => { state.mode = 'experienced'; state.trust = 60; state.planProgress = 30; state.calendarPhase = '4月上旬：計画策定'; },
       title: "🍳 1年目 4月1日：独立開業の決意",
-      text: "カフェで7年間店長を務めたあなたは独立を決意した。\n手持ち10万、口座50万に加え、現場での確かな実績がある。公庫からの満額融資を狙おう。",
-      adviceText: "7年の現場経験は最強の武器だニャ！計画書に現場の数字を落とし込めば満額融資も近いぞ！",
-      choices: [{ text: "創業計画書の作成に取りかかる（4月10日へ）", next: 'day10' }]
+      text: "カフェで7年間店長を務めたあなたは独立を決意した。\n手持ち10万、口座50万に加え、確かな現場実績がある。",
+      adviceText: "7年の経験があればセイサクからの満額引き出しも余裕だニャ！",
+      choices: [
+        { text: "🏦 日本政策金融公庫（セイサク）に申し込む", action: () => { state.loanType = 'seisaku'; }, next: 'day10' }
+      ]
     },
 
     setup_hard: {
-      action: () => { state.mode = 'hard'; state.trust = 0; state.planProgress = 0; },
+      action: () => { state.mode = 'hard'; state.trust = 0; state.planProgress = 0; state.calendarPhase = '4月中旬：背水の陣'; },
       title: "💀 1年目 4月1日：無職・実績ゼロからの挑戦",
-      text: "前職を退職し無職。飲食店経験もゼロ。\n手元には現金10万円と口座の50万円のみ。\n世間の目は甘くない。銀行も国金も、あなたに1円も貸してはくれないだろう。",
-      adviceText: "退路が断たれているニャ…！移動の電車賃やカフェ代でも現金は減るから慎重に行動するのだ！",
+      text: "前職を退職し無職。飲食店経験もゼロ。\n手元には現金10万円と口座の50万円のみ。\n銀行もセイサクも、あなたに1円も貸してはくれないだろう。",
+      adviceText: "退路が断たれているニャ…！間借り営業と日雇いバイトで泥臭く生き残るのだ！",
       choices: [
-        { text: "あがきとしてダメ元で公庫に申し込んでみる", next: 'day10' },
-        { text: "融資を端から諦め、50万円でできる間借り交渉へ動く", next: 'hard_start' }
+        { text: "ダメ元でセイサクに申し込んでみる", next: 'day10' },
+        { text: "融資を端から諦め、50万円でできる間借り営業へ動く", next: 'hard_start' }
       ]
     },
 
     day10: {
-      action: () => { state.cash -= 1800; }, // 電車代+カフェ代
-      title: "📑 1年目 4月10日：計画書作成と週末のアクション",
-      text: "駅前のカフェ（カフェ代・電車賃 -1,800円）で計画書を作成中。\n公庫へのアピール力を高めるため、週末にどのような行動をとっておく？",
-      adviceText: "公庫の担当者は『口だけの計画』を嫌うぞ。小さくても実際の売上データがあると一気に信用が増すのだニャ！",
+      action: () => { state.cash -= 1800; state.calendarPhase = '4月中旬：物件仮押さえと計画'; },
+      title: "📑 1年目 4月10日：物件仮押さえと試算",
+      text: "駅前のカフェ（カフェ代・電車賃 -1,800円）で計画書を作成中。\n融資申し込みには「店舗の見取り図（15坪：テーブル2卓×各席2席、カウンター4席など）」と、厨房機器の見積もり添付が必要だ。\nどの規模で見積もりを作る？",
+      adviceText: "初期費用を抑えて審査に通りやすくするか、新品で揃えて最初に大きく借りるかだニャ！",
       choices: [
         {
-          text: "🅰️ 週末に知り合いのバーを借りて『間借りカフェ』を営業し、テスト売上データを作る",
-          action: () => { state.trust += 25; state.planProgress += 30; state.hasTestNote = true; state.cash += 8000; },
+          text: "🅰️ 【中古プラン（融資希望300万円）】中古販売店を活用し、家賃光熱費の3ヶ月分の運転資金を手元に残す堅実設計",
+          action: () => { state.quoteType = '中古300万'; state.trust += 20; state.planProgress += 40; state.hasTestNote = true; },
           next: 'day20'
         },
         {
-          text: "🅱️ カフェに引きこもって、売上見通し（月商200万）のグラフを綺麗に清書する",
-          action: () => { state.trust -= 10; state.planProgress += 10; },
+          text: "🅱️ 【新品プラン（融資希望500万円）】内装・厨房をすべて新品で見積もり、万全の状態でスタートする",
+          action: () => { state.quoteType = '新品500万'; state.trust -= 10; state.planProgress += 30; },
           next: 'day20'
         }
       ]
     },
 
     day20: {
-      action: () => { state.cash -= 2500; },
-      title: "🏛️ 1年目 4月20日：面談前の最終準備",
-      text: "書類印刷や移動（費用 -2,500円）を終え、明日は公庫での対面面談だ。\n面談に持参する最も強力な武器は何にする？",
-      adviceText: "担当者は『赤字になった時の返済能力』をみているぞ！",
+      action: () => { state.cash -= 2500; state.calendarPhase = '4月下旬：面談予約と待ち時間'; },
+      title: "🏛️ 1年目 4月20日：面談日の決定と1週間の待機",
+      text: "書類一式を提出し、セイサク担当者から面談日の連絡が入る。\n面談日まで**約1週間**の待ち時間が発生（費用 -2,500円）。\n直前の準備として何をする？",
+      adviceText: "面談までの一週間が一番ソワソワする期間だニャ。追加の実績や受け答えの練習をしておこう！",
       choices: [
         {
-          text: "🅰️ 週末の間借り営業で記録した『テスト売上ノート（原価・回転数データ）』を持参する",
+          text: "週末に知り合いのバーで『テスト営業』を行い、売上データの証拠資料を追加作成する",
           action: () => { state.trust += 20; },
           next: 'interview'
         },
         {
-          text: "🅱️ 熱意と笑顔で押し切るためのイメージトレーニングをする",
-          action: () => { state.trust -= 10; },
+          text: "イメージトレーニングをして当日を迎える",
+          action: () => { state.trust -= 5; },
           next: 'interview'
         }
       ]
     },
 
     interview: {
-      action: () => { state.cash -= 960; },
-      title: "⚖️ 1年目 4月25日：【決戦】公庫の融資面談",
-      text: "公庫の面談室（往復電車賃 -960円）。担当者が鋭い目で見つめる。\n「計画書を拝見しました。で、万が一赤字が続いた場合、どうやって毎月5万円の返済を続けるおつもりですか？」",
-      adviceText: "ここが運命の分岐点だニャ！具体的で現実的なリスク管理を答えられるか！？",
+      action: () => { state.cash -= 960; state.calendarPhase = '4月下旬：融資面談本番'; },
+      title: "⚖️ 1年目 4月25日：【決戦】セイサクの融資面談",
+      text: "セイサクの面談室（往復電車賃 -960円）。担当者が鋭い目で見つめる。\n「万が一赤字が続いた場合、どうやって毎月返済を続けるおつもりですか？」",
+      adviceText: "ここが運命の分かれ道だニャ！現実的なリスク対策を答えられるか！？",
       choices: [
         {
-          text: "🅰️ 『最悪の場合でも、夜間の単発アルバイト等で返済原資を100%確保します』",
+          text: "『最悪の場合でも、夜間の単発アルバイト等で返済原資を100%確保します』",
           action: () => { state.trust += 20; },
-          next: 'judge_passbook'
+          next: 'waiting_period'
         },
         {
-          text: "🅱️ 『私のカフェは絶対にバズるので赤字になる想定はしていません』",
+          text: "『私のカフェは絶対にバズるので赤字になる想定はしていません』",
           action: () => { state.trust -= 30; },
-          next: 'judge_passbook'
+          next: 'waiting_period'
         }
       ]
     },
 
+    waiting_period: {
+      action: () => { state.calendarPhase = '5月上旬：結果待ちの2〜3週間'; },
+      title: "⏳ 1年目 5月上旬：胃が痛い結果待ち期間（2〜3週間）",
+      text: "面談が無事終了した。\nここから結果の電話連絡が来るまで**約2〜3週間**の長い審査待ち期間に入る。\nこの期間の過ごし方は……？",
+      adviceText: "この2〜3週間が経営者にとって一番長い期間だニャ。気晴らしや内装の打ち合わせを進めるのだ！",
+      choices: [
+        { text: "ドキドキしながら銀行からの連絡を待つ（5月中旬へ）", next: 'judge_passbook' }
+      ]
+    },
+
     judge_passbook: {
-      title: "🏦 1年目 4月30日：銀行ATMでの記帳",
-      text: "融資の判定日。あなたは通帳を持って銀行のATMへ向かった。\n緊張しながら通帳を機械に挿入する……",
-      adviceText: "融資決定額から保証料や振込手数料（約8%）が引かれた額が実際に振り込まれるぞ！",
+      title: "📞 1年目 5月中旬：ついに結果の電話連絡",
+      text: "スマホが鳴った。「セイサクですが、融資の件でお伝えが……」\n銀行ATMへ向かい、通帳を挿入して記帳ボタンを押す瞬間。",
+      adviceText: "諸費用（約8%）が引かれた実効額が振り込まれているか確認するのだニャ！",
       choices: [
         {
-          text: "記帳ボタンを押して結果を確認する",
+          text: "通帳記帳して結果を確認する",
           action: () => {
             if (state.mode === 'hard' || state.trust < 30) {
               // 否決
-            } else if (state.trust >= 60) {
-              // 300万融資（手数料8%で 276万着金）
-              state.bank += 2760000;
+            } else if (state.quoteType === '新品500万') {
+              if (state.trust >= 60) {
+                state.bank += 4600000; // 500万の8%引
+              } else {
+                state.bank += 2760000; // 減額
+              }
             } else {
-              // 100万融資（手数料8%で 92万着金）
-              state.bank += 920000;
+              if (state.trust >= 60) {
+                state.bank += 2760000; // 300万の8%引
+              } else {
+                state.bank += 920000;
+              }
             }
           },
           next: 'show_modal_passbook'
@@ -485,154 +514,54 @@
     show_modal_passbook: {
       action: () => {
         if (state.mode === 'hard' || state.trust < 30) {
-          showPassbook({ label: "振込：コクキン（審査否決）", amount: 0 }, null, 'may1');
-        } else if (state.trust >= 60) {
-          showPassbook({ label: "振込：コクキン（融資諸費用控除後）", amount: 2760000 }, null, 'may1');
+          showPassbook({ label: "振込：セイサク（審査否決）", amount: 0 }, 'may_result');
+        } else if (state.quoteType === '新品500万' && state.trust >= 60) {
+          showPassbook({ label: "振込：セイサク（新品プラン融資・諸費控除後）", amount: 4600000 }, 'may_result');
         } else {
-          showPassbook({ label: "振込：コクキン（一部可決・諸費控除後）", amount: 920000 }, null, 'may1');
+          showPassbook({ label: "振込：セイサク（中古プラン融資・諸費控除後）", amount: 2760000 }, 'may_result');
         }
       },
       title: "記帳中...", text: "通帳の印字を確認中...", choices: []
     },
 
-    may1: {
-      title: "📅 1年目 5月1日：出店計画と物件探し",
+    may_result: {
+      title: "📅 1年目 5月下旬：オープンへ向けた本格始動",
       text: () => {
         if (state.bank >= 3000000) {
-          return `🎉 【融資成功：実効着金 276万円】\n公庫から諸費用（8%）が引かれた276万円が着金！\n口座残高【約326万円】。いよいよ18坪・家賃23万円クラスの店舗獲得へ動く！`;
-        } else if (state.bank >= 1000000) {
-          return `⚠️ 【減額融資：実効着金 92万円】\n公庫から92万円が着金。口座残高【約142万円】。\n実店舗契約は厳しいため、極小居抜きか間借り拡大を目指す！`;
+          return `🎉 【融資実行：手元資金＋3ヶ月分の運転資金確保】\n見事に融資が実行され、家賃・光熱費の3ヶ月分がしっかり手元に残る安全な資金計画で店舗契約へ進める！`;
         } else {
-          return `💀 【融資完全否決（着金0円）】\n審査落ち……着金ゼロ！口座は50万円のまま。\n融資の道は絶たれた。手持ち10万＋口座50万で泥臭く生き残るしかない！`;
+          return `💀 【融資否決または大幅減額】\n計画を見直し、自力での間借り・極小路線へ切り替える必要がある！`;
         }
       },
-      adviceText: "店舗契約だけで160万円は一気に消えるぞ！手元キャッシュを残す計画を立てるのだニャ！",
+      adviceText: "手元に運転資金が残るかどうかが生死を分けるぞ！",
       choices: [
-        {
-          text: "🏠 【路面店舗探し】18坪・家賃23万円の物件を契約しに行く",
-          next: 'store_contract'
-        },
-        {
-          text: "💀 【自力・極小路線】融資なし・間借り営業で泥臭く現金を増やす",
-          next: 'hard_start'
-        }
+        { text: "15坪の見取り図を元に店舗契約と設営へ進む", next: 'hard_success' },
+        { text: "融資を諦めて自力・間借り路線でいく", next: 'hard_start' }
       ]
     },
 
-    // 18坪・家賃23万物件契約＆設営
-    store_contract: {
-      action: () => {
-        // 契約金約160万円（敷金・保証金・前家賃・手数料）
-        state.bank -= 1600000;
-      },
-      title: "🏢 1年目 5月15日：18坪・家賃23万円の物件契約",
-      text: "駅近の2階・18坪物件（6テーブル12席予定）を契約！\n敷金・保証金・仲介手数料・前家賃等で【160万円】が口座から消えた！\n残りの口座資金で「厨房機器・客席テーブル椅子」をどう揃える？",
-      adviceText: "新品で揃えると250万オーバーで即死（黒字倒産）するぞ！テンポスなどの中古市場を活用するのだニャ！",
-      choices: [
-        {
-          text: "🅰️ すべてピカピカの新品厨房・デザイナー家具で揃える（費用：230万円）",
-          action: () => { state.bank -= 2300000; },
-          next: 'store_setup_result'
-        },
-        {
-          text: "🅱️ 厨房機器は『テンポス』等の中古品・リースで固め、家具もDIY（費用：110万円）",
-          action: () => { state.bank -= 1100000; },
-          next: 'store_setup_result'
-        }
-      ]
-    },
-
-    store_setup_result: {
-      title: "🏪 1年目 6月1日：開店準備完了とキャッシュ残高",
-      text: () => {
-        if (state.bank < 0) {
-          return `💀 【オープン直前の黒字倒産（手元資金パンク）】\n内装・機器費用が払えず、オープン前に運転資金が完全にショートしてしまいました……。`;
-        } else {
-          return `店舗設営が完了！12席の可愛いカフェが完成しました。\n現在の残り口座キャッシュ: 【${state.bank.toLocaleString()}円】\n手元に運転資金を残せた状態でオープンを迎えます！`;
-        }
-      },
-      adviceText: "手元に運転資金（毎月の家賃・人件費・仕入れ代）が残っていないと初月の赤字で即死するぞ！",
-      choices: [
-        {
-          text: "オープン後の営業へ進む",
-          next: () => state.bank < 0 ? 'gameover_money' : 'hard_success'
-        }
-      ]
-    },
-
-    // 泥臭い間借り・現実の収支（月5万の手残り）
+    // 泥臭い自力ルート
     hard_start: {
-      action: () => { state.cash -= 15000; }, // 保証金・雑費
-      title: "☕ 1年目 5月15日：リアルな間借り営業の現実",
-      text: "夜間バーの昼間を借りて営業開始（雑費 -15,000円）。\n【1日のリアル収支（12席・回転数低）】\n・売上：25,000円（客数30人）\n・原価（30%）：-7,500円 / 歩合家賃（20%）：-5,000円\n・自分自身の生活費・保険等：-11,000円\n→ 1日の手残り純利益は【わずか1,500円（月4.5万）】！\n普通に働くだけでは2ヶ月で100万貯めるなど絶対に不可能だ！どうする！？",
-      adviceText: "これが現実の厳しさだニャ！2ヶ月で100万残すには身を削る極限行動しかないぞ！",
+      action: () => { state.cash -= 15000; state.calendarPhase = '自力生存ルート'; },
+      title: "☕ 間借り営業と日々のリアル収支",
+      text: "夜間バーを借りて営業開始。\n【1日のリアル収支】\n・売上: 25,000円 / 原価: -7,500円 / 家賃歩合: -5,000円 / 食費・生活費: -11,000円\n→ 1日の手残りわずか1,500円（月4.5万）。\n無休の16時間労働と深夜バイトを掛け持ちして100万円を作るしかない！",
+      adviceText: "これが現実の厳しさだニャ！",
       choices: [
         {
-          text: "🅰️ 無休＋1日16時間労働！昼は間借り、夜は深夜警備バイト（日給1万）で身体を壊す覚悟で稼ぐ",
+          text: "無休＋16時間労働＋深夜バイトで身体を張って現金を稼ぐ",
           action: () => { state.cash += 450000; state.hp -= 12; },
-          next: 'hard_june'
-        },
-        {
-          text: "🅱️ クラウドファンディングとSNS予約販売を打ち出し、オープン前の一括資金集めに賭ける",
-          action: () => { state.cash += 300000; state.hp -= 4; },
-          next: 'hard_june'
+          next: 'hard_success'
         }
-      ]
-    },
-
-    hard_june: {
-      action: () => { state.cash -= 20000; }, // 日常生活費
-      title: "🌧️ 1年目 6月20日：極限労働と体力の限界",
-      text: "無休の16時間労働と深夜バイトで手持ち現金が【約50万円】に達した！\nしかし体力が危険水域（" + state.hp + "/20）に突入。\n過労で倒れれば入院費で一発アウトだ……。",
-      adviceText: "倒れたら元も子もないニャ！休むか、命を削ってラストスパートか！？",
-      choices: [
-        {
-          text: "🅰️ 最後の気力を振り絞り、深夜バイトをもう一か月耐え抜く",
-          action: () => {
-            state.cash += 400000;
-            state.hp -= 7;
-            if (state.hp <= 0) return 'gameover_hp';
-          },
-          next: 'hard_july'
-        },
-        {
-          text: "🅱️ バイトを減らし、体力を回復させて健全な営業に戻す",
-          action: () => { state.hp = Math.min(20, state.hp + 8); },
-          next: 'hard_july'
-        }
-      ]
-    },
-
-    hard_july: {
-      title: "☀️ 1年目 7月：自力蓄積と0円居抜き物件",
-      text: "血の滲むような16時間無休労働を耐え抜き、手元キャッシュ【100万円以上】を自力で残した！\nそこへ知人から奇跡の噂が入る。\n『近所の老舗喫茶店が閉店予定で、造作譲渡料タダ（0円）で引き継ぎ手を探している』",
-      adviceText: "きたニャーー！融資ゼロから自力で残した100万円があれば、この0円物件で自分の店を持てるぞ！",
-      choices: [
-        { text: "0円居抜き物件の交渉へ向かう！（実店舗獲得ルートへ）", next: 'hard_success' }
       ]
     },
 
     hard_success: {
-      title: "🏆 第1章 クリア：実店舗オーナーへの道",
-      text: "過酷な資金繰りとリアリティを乗り越え、あなたは自分の店舗を手に入れた！\n失敗はすべて架空（ゲーム）で経験し、手元には本物の経営ノウハウが残った。\nここから2年目へ向けた本格経営が始まる！",
-      adviceText: "素晴らしい経営判断だったニャ！次回は2年目の採用・税金・多店舗化編で会おうニャ！",
+      title: "🏆 第1章 クリア：実践的経営力の証明",
+      text: "融資の仕組み、カレンダーでのスケジュール感、見取り図の作成、そして運転資金の重要性をすべて体験しました。\n手元には本物の経営ノウハウが残ります！",
+      adviceText: "お見事にゃ！現実の店舗経営でもこのシミュレーションを活かすのだニャ！",
       choices: [
         { text: "最初から別の設定で遊んでみる", next: 'start' }
       ]
-    },
-
-    gameover_money: {
-      title: "💀 GAME OVER：資金ショート（黒字倒産）",
-      text: "オープン直前に運転資金が底をつきました……。\n経営で最も恐ろしいのは『手元キャッシュがゼロになること』です。",
-      adviceText: "店舗設営にお金を使いすぎたニャ。次は中古機材を活用して手元に現金を残すのだ！",
-      choices: [{ text: "🔄 もう一度挑戦する", next: 'start' }]
-    },
-
-    gameover_hp: {
-      title: "💀 GAME OVER：過労倒産",
-      text: "無理な16時間無休労働と深夜バイトの連続で倒れ、救急搬送された。\n医療費と営業停止で資金が尽きました……。",
-      adviceText: "身体は最大の資産だニャ！無理な労働に頼らない仕組みを作るのだ！",
-      choices: [{ text: "🔄 もう一度挑戦する", next: 'start' }]
     }
   };
 
