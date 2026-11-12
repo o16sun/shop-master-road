@@ -9,7 +9,8 @@
       --bg-color: #ffffff;
       --text-color: #111111;
       --border-color: #222222;
-      --button-hover: #f0f0f0;
+      --button-hover: #f2f2f2;
+      --muted-text: #555555;
     }
 
     * {
@@ -25,7 +26,7 @@
       display: flex;
       justify-content: center;
       padding: 10px;
-      line-height: 1.6;
+      line-height: 1.55;
     }
 
     #app-container {
@@ -33,9 +34,9 @@
       max-width: 480px;
       border: 2px solid var(--border-color);
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px;
       background: #fff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
       position: relative;
     }
 
@@ -43,13 +44,13 @@
     .header-box {
       border: 1.5px solid var(--border-color);
       border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 16px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
       background-color: #ffffff;
     }
 
     .date-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: bold;
       border-bottom: 1px solid var(--border-color);
       padding-bottom: 6px;
@@ -59,11 +60,20 @@
       align-items: center;
     }
 
+    .mode-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      border: 1px solid var(--border-color);
+      font-weight: normal;
+    }
+
     .status-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 6px 12px;
-      font-size: 0.88rem;
+      gap: 4px 12px;
+      font-size: 0.85rem;
     }
 
     .status-item {
@@ -71,17 +81,82 @@
       justify-content: space-between;
     }
 
-    /* ミニカレンダー風バー */
-    .calendar-bar {
+    .fixed-cost-bar {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dotted #aaa;
+      font-size: 0.78rem;
+      display: flex;
+      justify-content: space-between;
+      color: #333;
+    }
+
+    /* カレンダー＆収支ログアコーディオン */
+    .calendar-box {
       border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 6px 10px;
-      background: #fdfdfd;
-      font-size: 0.8rem;
+      border-radius: 8px;
+      padding: 8px 10px;
       margin-bottom: 12px;
+      background-color: #fafafa;
+      font-size: 0.8rem;
+    }
+
+    .calendar-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      margin-top: 8px;
+      text-align: center;
+      font-size: 0.72rem;
+    }
+
+    .cal-day-name {
+      font-weight: bold;
+      color: #666;
+      padding-bottom: 2px;
+    }
+
+    .cal-cell {
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 3px 0;
+      background: #fff;
+    }
+
+    .cal-cell.active {
+      background: #111;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .cal-cell.passed {
+      background: #eaeaea;
+      color: #777;
+    }
+
+    .ledger-log {
+      margin-top: 8px;
+      max-height: 95px;
+      overflow-y: auto;
+      border-top: 1px dashed #bbb;
+      padding-top: 6px;
+      font-size: 0.75rem;
+      color: #222;
+    }
+
+    .ledger-entry {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+      border-bottom: 1px dotted #e0e0e0;
     }
 
     /* メインコンテンツ */
@@ -89,22 +164,30 @@
       border: 1.5px solid var(--border-color);
       border-radius: 8px;
       padding: 14px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       background-color: #fff;
     }
 
     .story-title {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       font-weight: bold;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 4px;
     }
 
     .story-text {
-      font-size: 0.92rem;
-      margin-bottom: 12px;
+      font-size: 0.9rem;
+      white-space: pre-line;
+    }
+
+    .spec-box {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border: 1px solid #333;
+      border-radius: 6px;
+      background: #f9f9f9;
+      font-size: 0.8rem;
       white-space: pre-line;
     }
 
@@ -112,21 +195,22 @@
     .choices-container {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 8px;
+      margin-bottom: 14px;
     }
 
     .choice-btn {
       background-color: #fff;
       border: 1.5px solid var(--border-color);
       border-radius: 8px;
-      padding: 12px;
+      padding: 11px 12px;
       text-align: left;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       cursor: pointer;
       transition: all 0.15s ease;
       color: var(--text-color);
       font-weight: 500;
+      white-space: pre-line;
     }
 
     .choice-btn:hover {
@@ -134,18 +218,18 @@
       transform: translateY(-1px);
     }
 
-    /* アドバイザーネコ */
+    /* アドバイザー（有料ネコ） */
     .advisor-box {
       border: 1px dashed var(--border-color);
       border-radius: 8px;
       padding: 12px;
       background-color: #ffffff;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
     }
 
     .advisor-header {
       display: flex;
-      gap: 8px;
+      justify-content: space-between;
       align-items: center;
       font-weight: bold;
       margin-bottom: 6px;
@@ -157,30 +241,30 @@
       border: none;
       padding: 6px 12px;
       border-radius: 6px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       cursor: pointer;
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
     .advisor-btn:hover {
-      opacity: 0.9;
+      opacity: 0.85;
     }
 
     .advisor-note {
-      font-size: 0.75rem;
-      color: #555;
+      font-size: 0.73rem;
+      color: #444;
       margin-top: 8px;
-      border-top: 1px dotted #ccc;
-      padding-top: 4px;
+      border-top: 1px dotted #bbb;
+      padding-top: 6px;
+      line-height: 1.45;
     }
 
     /* モーダル（通帳風UI） */
     .modal-overlay {
       display: none;
-      position: absolute;
+      position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      border-radius: 10px;
+      background: rgba(0,0,0,0.65);
       z-index: 100;
       justify-content: center;
       align-items: center;
@@ -189,18 +273,19 @@
 
     .passbook-card {
       background: #fbf9e6;
-      border: 2px solid #333;
+      border: 2px solid #222;
       border-radius: 8px;
       width: 100%;
+      max-width: 420px;
       padding: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
     }
 
     .passbook-title {
       font-family: monospace;
       font-weight: bold;
       font-size: 1rem;
-      border-bottom: 2px solid #333;
+      border-bottom: 2px solid #222;
       padding-bottom: 4px;
       margin-bottom: 10px;
       display: flex;
@@ -209,32 +294,24 @@
 
     .passbook-line {
       font-family: monospace;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       display: flex;
       justify-content: space-between;
       margin-bottom: 6px;
       padding: 4px 0;
-      border-bottom: 1px dotted #aaa;
+      border-bottom: 1px dotted #999;
     }
 
     .close-modal-btn {
       width: 100%;
       padding: 10px;
-      background: #222;
+      background: #111;
       color: #fff;
       border: none;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
       margin-top: 12px;
-    }
-
-    .mode-tag {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      border: 1px solid var(--border-color);
     }
   </style>
 </head>
@@ -259,17 +336,31 @@
       <span id="date-display">1年目 4月1日</span>
       <span id="mode-display" class="mode-tag">未設定</span>
     </div>
-    <!-- カレンダーインジケーター -->
-    <div class="calendar-bar">
-      <span>🗓️ カレンダー進行状況:</span>
-      <strong id="calendar-text">4月上旬（準備期間）</strong>
-    </div>
     <div class="status-grid">
       <div class="status-item"><span>💖 体力:</span> <span id="hp-display">20/20</span></div>
       <div class="status-item"><span>👛 現金:</span> <span id="cash-display">100,000円</span></div>
       <div class="status-item"><span>🏦 口座:</span> <span id="bank-display">500,000円</span></div>
+      <div class="status-item"><span>🪪 衛生資格:</span> <span id="license-display">未確認</span></div>
       <div class="status-item"><span>📄 計画書:</span> <span id="plan-display">0%</span></div>
       <div class="status-item"><span>🏛️ 信頼度:</span> <span id="trust-display">0pt</span></div>
+    </div>
+    <div class="fixed-cost-bar">
+      <span>📉 毎月固定返済(機器ローン等):</span>
+      <span id="monthly-debt-display" style="font-weight:bold;">0円 / 月</span>
+    </div>
+  </div>
+
+  <!-- カレンダー＆入出金明細ログ -->
+  <div class="calendar-box">
+    <div class="calendar-header" onclick="toggleCalendar()">
+      <span id="cal-month-label">📅 1年目 4月 カレンダー・出納帳</span>
+      <span id="cal-toggle-icon">▼ 表示切替</span>
+    </div>
+    <div id="calendar-body">
+      <div class="calendar-grid" id="calendar-grid"></div>
+      <div class="ledger-log" id="ledger-log">
+        <div class="ledger-entry"><span>4/1 初期手持ち現金</span><span>+100,000円</span></div>
+      </div>
     </div>
   </div>
 
@@ -277,22 +368,24 @@
   <div class="story-card">
     <div class="story-title" id="story-title">☕ 主人公の選択</div>
     <div class="story-text" id="story-text">loading...</div>
+    <div class="spec-box" id="story-spec" style="display:none;"></div>
   </div>
 
   <!-- 選択肢 -->
   <div class="choices-container" id="choices-container"></div>
 
-  <!-- 税理士ネコのアドバイス -->
+  <!-- 有料アドバイザーネコ -->
   <div class="advisor-box">
     <div class="advisor-header">
       <span>🐱 税理士ネコのアドバイス</span>
     </div>
     <div id="advisor-body">
-      <p style="font-size: 0.8rem; color: #555;">「手持ちの2,000円を払って専門的な助言を聞くニャ？」</p>
+      <p style="font-size: 0.78rem; color: #444;">「手持ちの2,000円を払って専門的な助言を聞くニャ？」</p>
       <button class="advisor-btn" onclick="buyAdvice()">2,000円払ってアドバイスを聞く</button>
     </div>
     <div class="advisor-note">
-      ※顧問契約の相場：月額平均3万〜4万円（年間・決算料込みで約40万〜50万円）。融資や資金繰り対策にはプロのサポートが不可欠だニャ！
+      ※税理士との顧問契約相場は、月額平均<strong>3万〜4万円</strong>（決算料込みで<strong>年間約40万〜50万円</strong>）が目安です。<br>
+      ※顧問契約を結ばず<strong>「融資サポートのみ（スポット契約：着手金＋成功報酬数％）」</strong>を依頼する選択肢もありますが、開業後の記帳・確定申告は自力で行う必要があります。
     </div>
   </div>
 </div>
@@ -300,64 +393,136 @@
 <script>
   // ゲーム状態
   let state = {
-    day: 1,
-    month: 4,
     year: 1,
-    calendarPhase: '4月上旬：準備期',
-    mode: '', 
+    month: 4,
+    day: 1,
+    mode: '', // 'standard', 'experienced', 'hard'
     hp: 20,
     maxHp: 20,
     cash: 100000,   // 手持ち現金 10万円
     bank: 500000,   // 銀行口座 50万円
+    hasLicense: false,
     planProgress: 0,
     trust: 0,
     hasTestNote: false,
-    loanType: 'seisaku', // 'seisaku' or 'bank'
-    quoteType: '中古300万', // '新品500万' or '中古300万'
+    lenderType: 'koko', // 'koko' (公庫) or 'bank' (民間銀行)
+    equipPlan: 'used',  // 'new' (新品1000万ローン) or 'used' (中古販売店)
+    monthlyDebt: 0,     // 毎月の機器ローン等支払い
+    taxSupport: 'none', // 'retainer' (顧問), 'spot' (融資のみ), 'none'
+    logs: [{ date: '4/1', desc: '初期手持ち現金（口座別50万）', amount: 100000, type: 'cash' }],
     currentSceneKey: 'start'
   };
 
+  let calVisible = true;
+  function toggleCalendar() {
+    calVisible = !calVisible;
+    document.getElementById('calendar-body').style.display = calVisible ? 'block' : 'none';
+    document.getElementById('cal-toggle-icon').innerText = calVisible ? '▼ 閉じる' : '▶ 開く';
+  }
+
+  // 収支記録＆日付進行ヘルパー
+  function recordTx(desc, amount, target = 'cash') {
+    if (target === 'cash') {
+      state.cash += amount;
+    } else {
+      state.bank += amount;
+    }
+    const sign = amount >= 0 ? '+' : '';
+    const label = target === 'bank' ? '[口座]' : '[現金]';
+    state.logs.unshift({
+      date: `${state.month}/${state.day}`,
+      desc: `${label} ${desc}`,
+      amountStr: `${sign}${amount.toLocaleString()}円`
+    });
+  }
+
+  function advanceDate(month, day, livingDays = 0) {
+    state.month = month;
+    state.day = day;
+    if (livingDays > 0) {
+      // 日々の食費（朝昼晩）・雑費・生活固定費のリアル引き落とし
+      const dailyFood = livingDays * 1200;
+      recordTx(`${livingDays}日分の食事代(朝昼晩)・日用品`, -dailyFood, 'cash');
+    }
+  }
+
+  function renderCalendar() {
+    document.getElementById('cal-month-label').innerText = `📅 ${state.year}年目 ${state.month}月 カレンダー・出納帳`;
+    const grid = document.getElementById('calendar-grid');
+    grid.innerHTML = '';
+    const days = ['日', '月', '火', '水', '木', '金', '土'];
+    days.forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'cal-day-name';
+      el.innerText = d;
+      grid.appendChild(el);
+    });
+
+    const daysInMonth = (state.month === 4 || state.month === 6) ? 30 : 31;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell';
+      if (d < state.day) cell.classList.add('passed');
+      if (d === state.day) cell.classList.add('active');
+      cell.innerText = d;
+      grid.appendChild(cell);
+    }
+
+    const logEl = document.getElementById('ledger-log');
+    logEl.innerHTML = state.logs.map(l => `
+      <div class="ledger-entry">
+        <span>${l.date} ${l.desc}</span>
+        <span style="font-weight:bold; color:${l.amountStr && l.amountStr.startsWith('-') ? '#b00020' : '#0b6623'};">${l.amountStr || ''}</span>
+      </div>
+    `).join('');
+  }
+
   function updateUI() {
     document.getElementById('date-display').innerText = `${state.year}年目 ${state.month}月${state.day}日`;
-    document.getElementById('calendar-text').innerText = state.calendarPhase;
     document.getElementById('hp-display').innerText = `${state.hp}/${state.maxHp}`;
     document.getElementById('cash-display').innerText = `${state.cash.toLocaleString()}円`;
     document.getElementById('bank-display').innerText = `${state.bank.toLocaleString()}円`;
+    document.getElementById('license-display').innerText = state.hasLicense ? '取得済' : '未取得';
     document.getElementById('plan-display').innerText = `${state.planProgress}%`;
     document.getElementById('trust-display').innerText = `${state.trust}pt`;
+    document.getElementById('monthly-debt-display').innerText = `${state.monthlyDebt.toLocaleString()}円 / 月`;
 
     const modeNames = { standard: '正社員・未経験', experienced: '正社員・経験者', hard: '💀 ハードモード' };
     document.getElementById('mode-display').innerText = modeNames[state.mode] || '未設定';
+    renderCalendar();
   }
 
+  // 有料アドバイス処理
   function buyAdvice() {
     if (state.cash < 2000) {
       alert("手持ちの現金が足りません！");
       return;
     }
-    state.cash -= 2000;
+    recordTx('税理士ネコ スポット相談料', -2000, 'cash');
     updateUI();
 
     const scene = scenes[state.currentSceneKey];
     const body = document.getElementById('advisor-body');
-    body.innerHTML = `<p style="color: #111; font-weight: bold;">🐱 「${scene.adviceText || '数字の根拠と自己資金の動線を明確にするのだニャ！'}」</p>`;
+    const txt = typeof scene.adviceText === 'function' ? scene.adviceText() : scene.adviceText;
+    body.innerHTML = `<p style="color: #111; font-weight: bold;">🐱 「${txt || '数字の根拠と手元キャッシュの厚みが命だニャ！'}」</p>`;
   }
 
   function resetAdviceBox() {
     const body = document.getElementById('advisor-body');
     body.innerHTML = `
-      <p style="font-size: 0.8rem; color: #555;">「手持ちの2,000円を払って専門的な助言を聞くニャ？」</p>
+      <p style="font-size: 0.78rem; color: #444;">「手持ちの2,000円を払って専門的な助言を聞くニャ？」</p>
       <button class="advisor-btn" onclick="buyAdvice()">2,000円払ってアドバイスを聞く</button>
     `;
   }
 
-  function showPassbook(line1, nextScene) {
+  // 通帳モック表示
+  function showPassbook(prevBank, depositAmount, nextScene) {
     const modal = document.getElementById('passbook-modal');
     const content = document.getElementById('passbook-content');
     content.innerHTML = `
-      <div class="passbook-line"><span>前月繰越</span><span>￥${(500000).toLocaleString()}</span></div>
-      <div class="passbook-line" style="color: blue; font-weight: bold;"><span>${line1.label}</span><span>￥${line1.amount.toLocaleString()}</span></div>
-      <div class="passbook-line" style="font-weight: bold; border-top: 1px solid #333;"><span>差引残高</span><span>￥${state.bank.toLocaleString()}</span></div>
+      <div class="passbook-line"><span>繰越残高</span><span>￥${prevBank.toLocaleString()}</span></div>
+      <div class="passbook-line" style="color: #003399; font-weight: bold;"><span>振込：キンユウキカン（諸費控除後）</span><span>￥${depositAmount.toLocaleString()}</span></div>
+      <div class="passbook-line" style="font-weight: bold; border-top: 1.5px solid #222;"><span>差引残高</span><span>￥${state.bank.toLocaleString()}</span></div>
     `;
     modal.style.display = 'flex';
     modal.dataset.next = nextScene;
@@ -373,195 +538,392 @@
   // シーン定義
   const scenes = {
     start: {
-      title: "☕ 主人公のバックボーン選択",
-      text: "店舗経営を目指すあなた。創業前のあなたの「現在の職業」と「経験」を選んでください。\n手持ち現金は財布に10万円、銀行口座に50万円が入っています。\n選択によって融資審査の難易度が大きく変わります。",
-      adviceText: "ハードモードは融資不可の激辛ルートだニャ！電車代やカフェ代で手持ち現金が減っていくリアルな世界だぞ！",
+      title: "☕ 主人公のバックボーン（前職と経験）選択",
+      text: "店舗経営を目指すあなた。創業前の「現在の職業」と「経験」を選んでください。\n手持ち現金は財布に10万円、銀行口座に自己資金50万円が入っています。\n日々の食事代（朝昼晩）や電車賃、カフェ代などリアルな出費がカレンダーに記録されていきます。",
+      adviceText: "ハードモードは融資不可の激辛ルートだニャ！日々の飯代や電車代でも現金は確実に減っていくから覚悟するのだニャ！",
       choices: [
-        { text: "👔 【標準】異業種の正社員（カフェ未経験）\n（コツコツ貯蓄・信用高・実務経験なし）", next: 'setup_standard' },
-        { text: "🍳 【経験者】飲食店の正社員店長（経験7年）\n（同業種での確かな実績あり・融資で有利）", next: 'setup_experienced' },
-        { text: "💀 【ハードモード】完全未経験・無職（融資100%不可）\n（信用ゼロ・融資0円確定！自力で現金を残す逆転ルート）", next: 'setup_hard' }
+        {
+          text: "👔 【標準】異業種の正社員（カフェ未経験）\n（コツコツ貯蓄あり・個人の信用高・実務経験なし）",
+          next: 'setup_standard'
+        },
+        {
+          text: "🍳 【経験者】飲食店の正社員店長（経験7年）\n（同業種での確かな実績あり・融資審査で圧倒的に有利）",
+          next: 'setup_experienced'
+        },
+        {
+          text: "💀 【ハードモード】完全未経験・無職（融資100%不可）\n（信用ゼロ・融資0円確定！自力で現金を残す逆転ルート）",
+          next: 'setup_hard'
+        }
       ]
     },
 
     setup_standard: {
-      action: () => { state.mode = 'standard'; state.trust = 30; state.planProgress = 10; state.calendarPhase = '4月上旬：計画策定'; },
-      title: "📄 1年目 4月1日：脱サラ創業の決意",
-      text: "あなたは正社員。今月末で退職し、念願のカフェを開業する決意をした。\n手持ち現金10万、口座50万。\nどこから融資を引っ張るか、最初に選ぼう。",
-      adviceText: "初めての創業なら、無担保・無保証人で借りられる『日本政策金融公庫（セイサク）』が王道だニャ！",
+      action: () => { state.mode = 'standard'; state.trust = 30; state.planProgress = 10; },
+      title: "📄 1年目 4月1日：脱サラ創業の決意と資格確認",
+      text: "あなたは正社員。今月末で退職し、念願のカフェ（15坪・12席規模）を開業する決意をした。\nところで、飲食店営業に必須の「食品衛生責任者」の資格はすでに持っている？",
+      adviceText: "食品衛生責任者の資格がないと保健所の営業許可が下りないぞ！持っていなければ今のうちに講習会を予約するのだニャ！",
       choices: [
-        { text: "🏦 日本政策金融公庫（セイサク）に申し込むルートへ", action: () => { state.loanType = 'seisaku'; }, next: 'day10' },
-        { text: "🏛️ 地元の地方銀行（要預金実績・税理士紹介）に挑むルートへ", action: () => { state.loanType = 'bank'; state.trust -= 10; }, next: 'day10' }
+        {
+          text: "🪪 すでに資格を持っている（調理師免許・受講済）",
+          action: () => { state.hasLicense = true; state.trust += 5; },
+          next: 'day5_property'
+        },
+        {
+          text: "📝 まだ持っていない（4月4日の講習会に申し込む：受講料 12,000円）",
+          action: () => {
+            advanceDate(4, 4, 3);
+            recordTx('食品衛生責任者 講習会受講料・交通費', -12960, 'cash');
+            state.hasLicense = true;
+            state.hp -= 2;
+          },
+          next: 'day5_property'
+        }
       ]
     },
 
     setup_experienced: {
-      action: () => { state.mode = 'experienced'; state.trust = 60; state.planProgress = 30; state.calendarPhase = '4月上旬：計画策定'; },
-      title: "🍳 1年目 4月1日：独立開業の決意",
-      text: "カフェで7年間店長を務めたあなたは独立を決意した。\n手持ち10万、口座50万に加え、確かな現場実績がある。",
-      adviceText: "7年の経験があればセイサクからの満額引き出しも余裕だニャ！",
-      choices: [
-        { text: "🏦 日本政策金融公庫（セイサク）に申し込む", action: () => { state.loanType = 'seisaku'; }, next: 'day10' }
-      ]
+      action: () => { state.mode = 'experienced'; state.trust = 60; state.planProgress = 30; state.hasLicense = true; },
+      title: "🍳 1年目 4月1日：独立開業の決意（衛生資格取得済）",
+      text: "カフェで7年間店長を務めたあなたは独立を決意した。\n食品衛生責任者の資格も取得済み。手持ち10万・口座50万と現場経験を武器に、15坪・12席の店舗開業へ向けて動き出す。",
+      adviceText: "7年の現場経験は最強の武器だニャ！次は物件の仮押さえと店舗見取り図の作成に進むぞ！",
+      choices: [{ text: "物件の仮押さえと店舗見取り図の作成へ（4月6日へ）", next: 'day5_property' }]
     },
 
     setup_hard: {
-      action: () => { state.mode = 'hard'; state.trust = 0; state.planProgress = 0; state.calendarPhase = '4月中旬：背水の陣'; },
+      action: () => { state.mode = 'hard'; state.trust = 0; state.planProgress = 0; },
       title: "💀 1年目 4月1日：無職・実績ゼロからの挑戦",
-      text: "前職を退職し無職。飲食店経験もゼロ。\n手元には現金10万円と口座の50万円のみ。\n銀行もセイサクも、あなたに1円も貸してはくれないだろう。",
-      adviceText: "退路が断たれているニャ…！間借り営業と日雇いバイトで泥臭く生き残るのだ！",
-      choices: [
-        { text: "ダメ元でセイサクに申し込んでみる", next: 'day10' },
-        { text: "融資を端から諦め、50万円でできる間借り営業へ動く", next: 'hard_start' }
-      ]
-    },
-
-    day10: {
-      action: () => { state.cash -= 1800; state.calendarPhase = '4月中旬：物件仮押さえと計画'; },
-      title: "📑 1年目 4月10日：物件仮押さえと試算",
-      text: "駅前のカフェ（カフェ代・電車賃 -1,800円）で計画書を作成中。\n融資申し込みには「店舗の見取り図（15坪：テーブル2卓×各席2席、カウンター4席など）」と、厨房機器の見積もり添付が必要だ。\nどの規模で見積もりを作る？",
-      adviceText: "初期費用を抑えて審査に通りやすくするか、新品で揃えて最初に大きく借りるかだニャ！",
+      text: "前職を退職し無職。飲食店経験もゼロ。手元には現金10万円と口座の50万円のみ。\n銀行も公庫も1円も貸してくれない現実の中、まずは食品衛生責任者の資格を取るか、知人の店の間借り交渉に動くか……。",
+      adviceText: "無職でも『食品衛生責任者』の講習（約1万2千円）を受ければ1日で資格は取れるぞ。間借りでも保健所対応で必須だニャ！",
       choices: [
         {
-          text: "🅰️ 【中古プラン（融資希望300万円）】中古販売店を活用し、家賃光熱費の3ヶ月分の運転資金を手元に残す堅実設計",
-          action: () => { state.quoteType = '中古300万'; state.trust += 20; state.planProgress += 40; state.hasTestNote = true; },
-          next: 'day20'
-        },
-        {
-          text: "🅱️ 【新品プラン（融資希望500万円）】内装・厨房をすべて新品で見積もり、万全の状態でスタートする",
-          action: () => { state.quoteType = '新品500万'; state.trust -= 10; state.planProgress += 30; },
-          next: 'day20'
-        }
-      ]
-    },
-
-    day20: {
-      action: () => { state.cash -= 2500; state.calendarPhase = '4月下旬：面談予約と待ち時間'; },
-      title: "🏛️ 1年目 4月20日：面談日の決定と1週間の待機",
-      text: "書類一式を提出し、セイサク担当者から面談日の連絡が入る。\n面談日まで**約1週間**の待ち時間が発生（費用 -2,500円）。\n直前の準備として何をする？",
-      adviceText: "面談までの一週間が一番ソワソワする期間だニャ。追加の実績や受け答えの練習をしておこう！",
-      choices: [
-        {
-          text: "週末に知り合いのバーで『テスト営業』を行い、売上データの証拠資料を追加作成する",
-          action: () => { state.trust += 20; },
-          next: 'interview'
-        },
-        {
-          text: "イメージトレーニングをして当日を迎える",
-          action: () => { state.trust -= 5; },
-          next: 'interview'
-        }
-      ]
-    },
-
-    interview: {
-      action: () => { state.cash -= 960; state.calendarPhase = '4月下旬：融資面談本番'; },
-      title: "⚖️ 1年目 4月25日：【決戦】セイサクの融資面談",
-      text: "セイサクの面談室（往復電車賃 -960円）。担当者が鋭い目で見つめる。\n「万が一赤字が続いた場合、どうやって毎月返済を続けるおつもりですか？」",
-      adviceText: "ここが運命の分かれ道だニャ！現実的なリスク対策を答えられるか！？",
-      choices: [
-        {
-          text: "『最悪の場合でも、夜間の単発アルバイト等で返済原資を100%確保します』",
-          action: () => { state.trust += 20; },
-          next: 'waiting_period'
-        },
-        {
-          text: "『私のカフェは絶対にバズるので赤字になる想定はしていません』",
-          action: () => { state.trust -= 30; },
-          next: 'waiting_period'
-        }
-      ]
-    },
-
-    waiting_period: {
-      action: () => { state.calendarPhase = '5月上旬：結果待ちの2〜3週間'; },
-      title: "⏳ 1年目 5月上旬：胃が痛い結果待ち期間（2〜3週間）",
-      text: "面談が無事終了した。\nここから結果の電話連絡が来るまで**約2〜3週間**の長い審査待ち期間に入る。\nこの期間の過ごし方は……？",
-      adviceText: "この2〜3週間が経営者にとって一番長い期間だニャ。気晴らしや内装の打ち合わせを進めるのだ！",
-      choices: [
-        { text: "ドキドキしながら銀行からの連絡を待つ（5月中旬へ）", next: 'judge_passbook' }
-      ]
-    },
-
-    judge_passbook: {
-      title: "📞 1年目 5月中旬：ついに結果の電話連絡",
-      text: "スマホが鳴った。「セイサクですが、融資の件でお伝えが……」\n銀行ATMへ向かい、通帳を挿入して記帳ボタンを押す瞬間。",
-      adviceText: "諸費用（約8%）が引かれた実効額が振り込まれているか確認するのだニャ！",
-      choices: [
-        {
-          text: "通帳記帳して結果を確認する",
+          text: "🪪 講習会を受けて食品衛生責任者を取る（費用 -12,960円）",
           action: () => {
-            if (state.mode === 'hard' || state.trust < 30) {
-              // 否決
-            } else if (state.quoteType === '新品500万') {
-              if (state.trust >= 60) {
-                state.bank += 4600000; // 500万の8%引
-              } else {
-                state.bank += 2760000; // 減額
-              }
-            } else {
-              if (state.trust >= 60) {
-                state.bank += 2760000; // 300万の8%引
-              } else {
-                state.bank += 920000;
-              }
-            }
+            advanceDate(4, 4, 3);
+            recordTx('食品衛生責任者 講習会受講料・交通費', -12960, 'cash');
+            state.hasLicense = true;
           },
-          next: 'show_modal_passbook'
+          next: 'hard_negotiate'
+        },
+        {
+          text: "🏃 資格は後回しにして、知人の店に間借りさせてもらえないか交渉に行く",
+          action: () => { advanceDate(4, 5, 4); recordTx('移動電車賃・手土産代', -2400, 'cash'); },
+          next: 'hard_negotiate'
         }
       ]
     },
 
-    show_modal_passbook: {
+    // 物件仮押さえ・15坪12席見取り図・資金使途設定
+    day5_property: {
       action: () => {
-        if (state.mode === 'hard' || state.trust < 30) {
-          showPassbook({ label: "振込：セイサク（審査否決）", amount: 0 }, 'may_result');
-        } else if (state.quoteType === '新品500万' && state.trust >= 60) {
-          showPassbook({ label: "振込：セイサク（新品プラン融資・諸費控除後）", amount: 4600000 }, 'may_result');
-        } else {
-          showPassbook({ label: "振込：セイサク（中古プラン融資・諸費控除後）", amount: 2760000 }, 'may_result');
-        }
+        advanceDate(4, 6, 2);
+        recordTx('不動産内見 電車賃・カフェ打ち合わせ代', -2340, 'cash');
       },
-      title: "記帳中...", text: "通帳の印字を確認中...", choices: []
-    },
-
-    may_result: {
-      title: "📅 1年目 5月下旬：オープンへ向けた本格始動",
-      text: () => {
-        if (state.bank >= 3000000) {
-          return `🎉 【融資実行：手元資金＋3ヶ月分の運転資金確保】\n見事に融資が実行され、家賃・光熱費の3ヶ月分がしっかり手元に残る安全な資金計画で店舗契約へ進める！`;
-        } else {
-          return `💀 【融資否決または大幅減額】\n計画を見直し、自力での間借り・極小路線へ切り替える必要がある！`;
-        }
-      },
-      adviceText: "手元に運転資金が残るかどうかが生死を分けるぞ！",
-      choices: [
-        { text: "15坪の見取り図を元に店舗契約と設営へ進む", next: 'hard_success' },
-        { text: "融資を諦めて自力・間借り路線でいく", next: 'hard_start' }
-      ]
-    },
-
-    // 泥臭い自力ルート
-    hard_start: {
-      action: () => { state.cash -= 15000; state.calendarPhase = '自力生存ルート'; },
-      title: "☕ 間借り営業と日々のリアル収支",
-      text: "夜間バーを借りて営業開始。\n【1日のリアル収支】\n・売上: 25,000円 / 原価: -7,500円 / 家賃歩合: -5,000円 / 食費・生活費: -11,000円\n→ 1日の手残りわずか1,500円（月4.5万）。\n無休の16時間労働と深夜バイトを掛け持ちして100万円を作るしかない！",
-      adviceText: "これが現実の厳しさだニャ！",
+      title: "📐 1年目 4月6日：物件の仮押さえ＆店舗見取り図作成",
+      text: "融資の事前申し込みには「物件の仮押さえ」と「店舗見取り図・見積書」の添付が必須だ！\n駅徒歩6分の15坪物件（家賃22万・初期契約金160万円）を仮押さえし、見取り図を引いた。",
+      spec: "【仮押さえ店舗スペック・図面概要】\n・広さ：15坪（約50㎡）\n・客席構成：計12席（2名掛けテーブル×2卓＝4席、4名掛け×1卓＝4席、カウンター4席）\n・公庫/銀行への提出資金使途（合計500万円枠）：\n  ① 設備資金：300万円（物件契約160万＋内装・改装工事費140万）\n  ② 運転資金：200万円（家賃・光熱費・仕入の3ヶ月分確保）",
+      adviceText: "実務では物件の仮押さえと図面がないと融資審査のスタートラインにすら立てないニャ！さらに厨房機器を新品にするか中古にするかで見積もりが激変するぞ！",
       choices: [
         {
-          text: "無休＋16時間労働＋深夜バイトで身体を張って現金を稼ぐ",
-          action: () => { state.cash += 450000; state.hp -= 12; },
-          next: 'hard_success'
+          text: "✨ 【新品プラン】厨房機器は新品一式（約1,000万円）をローン契約で申請\n（初期持ち出しを抑え運転資金を厚く残すが、毎月30万円のローン返済が発生）",
+          action: () => { state.equipPlan = 'new'; state.planProgress += 20; },
+          next: 'day10_action'
+        },
+        {
+          text: "🔧 【中古プラン】厨房機器・家具は中古販売店で揃える見積もりで申請\n（初期投資を抑え、毎月のローン返済をゼロ〜少額に抑える堅実ルート）",
+          action: () => { state.equipPlan = 'used'; state.planProgress += 25; state.trust += 10; },
+          next: 'day10_action'
         }
       ]
     },
 
-    hard_success: {
-      title: "🏆 第1章 クリア：実践的経営力の証明",
-      text: "融資の仕組み、カレンダーでのスケジュール感、見取り図の作成、そして運転資金の重要性をすべて体験しました。\n手元には本物の経営ノウハウが残ります！",
-      adviceText: "お見事にゃ！現実の店舗経営でもこのシミュレーションを活かすのだニャ！",
+    // テスト売上データ作り（伏線）＆税理士契約形態
+    day10_action: {
+      action: () => {
+        advanceDate(4, 10, 4);
+        recordTx('事業計画書 印刷・カフェ作業代', -1800, 'cash');
+      },
+      title: "📑 1年目 4月10日：テスト売上実績作り ＆ 税理士サポート選択",
+      text: "申請書類の説得力を高めるため、週末に知人のバーの昼間を借りてテスト営業を行い「売上・原価ノート」を作成した（テスト純利益 +8,500円）。\nここで、融資申し込みにあたって税理士をどう活用する？",
+      action2: () => {},
+      adviceText: "税理士と顧問契約（月3〜4万）を結ぶと民間銀行や公庫の信頼度が上がるぞ。予算が厳しければ『融資サポートのみ（スポット契約）』という手もあるニャ！",
       choices: [
-        { text: "最初から別の設定で遊んでみる", next: 'start' }
+        {
+          text: "🤝 税理士と顧問契約を予約する（開業後 月額35,000円／融資信頼度 大幅UP）",
+          action: () => {
+            recordTx('週末テスト営業 純利益', 8500, 'cash');
+            state.hasTestNote = true;
+            state.taxSupport = 'retainer';
+            state.trust += 20;
+            state.planProgress += 25;
+          },
+          next: 'day15_apply'
+        },
+        {
+          text: "📄 『融資サポートのみ（スポット契約）』を依頼する（着手金 30,000円＋成功報酬）",
+          action: () => {
+            recordTx('週末テスト営業 純利益', 8500, 'cash');
+            recordTx('税理士 融資スポット着手金', -30000, 'bank');
+            state.hasTestNote = true;
+            state.taxSupport = 'spot';
+            state.trust += 12;
+            state.planProgress += 20;
+          },
+          next: 'day15_apply'
+        },
+        {
+          text: "✍️ 税理士は頼まず、すべて自力で申し込み書類を提出する（費用 0円）",
+          action: () => {
+            recordTx('週末テスト営業 純利益', 8500, 'cash');
+            state.hasTestNote = true;
+            state.taxSupport = 'none';
+            state.planProgress += 10;
+          },
+          next: 'day15_apply'
+        }
       ]
+    },
+
+    // 融資申し込み（公庫 vs 民間銀行）＆ 1週間待ち
+    day15_apply: {
+      action: () => {
+        advanceDate(4, 15, 5);
+        recordTx('書類郵送・印紙・証明書類取得費', -3200, 'cash');
+      },
+      title: "🏦 1年目 4月15日：融資の事前申し込み（申込先選択）",
+      text: "仮押さえ図面・見積書・テスト売上ノートを揃え、いよいよ事前申し込みを行う。\n申し込みから面談日までは【約1週間】かかる。\nどこに融資を申し込む？",
+      adviceText: "民間銀行（地銀・信金）は『これまでの預金付き合い』や『税理士の強い紹介』がないと創業融資はほぼ門前払いだニャ！無難なのは公庫だが、どうする？",
+      choices: [
+        {
+          text: "🏛️ 日本政策金融公庫（国金）に申し込む\n（創業融資の王道。実績と計画書の整合性が重視される）",
+          action: () => { state.lenderType = 'koko'; },
+          next: 'day22_interview'
+        },
+        {
+          text: "🏦 地元の民間銀行（信用金庫・地方銀行）に申し込む\n（付き合いや税理士顧問がないと審査通過は極めて困難）",
+          action: () => {
+            state.lenderType = 'bank';
+            if (state.taxSupport !== 'retainer') state.trust -= 25;
+          },
+          next: 'day22_interview'
+        }
+      ]
+    },
+
+    // 1週間後の面談
+    day22_interview: {
+      action: () => {
+        advanceDate(4, 22, 7);
+        recordTx('面談会場 往復電車賃', -960, 'cash');
+      },
+      title: "⚖️ 1年目 4月22日：【申込から1週間後】融資担当者との対面面談",
+      text: "申し込みから1週間。ついに担当者と対面する日が来た。\n「仮押さえ物件の図面と見積もり、テスト売上ノートも拝見しました。ところで、万が一オープン後に赤字が続いた場合、どうやって返済を続けますか？」",
+      adviceText: "面談が終わってもすぐにはお金は振り込まれないぞ！ここから電話で可否の連絡が来るまで【さらに2〜3週間】待つことになるのだニャ！",
+      choices: [
+        {
+          text: "🅰️ 『運転資金200万（3ヶ月分）を死守しつつ、赤字時は夜間バイトで返済原資を確保します』",
+          action: () => { state.trust += 20; },
+          next: 'may12_result_wait'
+        },
+        {
+          text: "🅱️ 『12席を毎日3回転させれば初月から黒字になるので赤字の心配はありません』",
+          action: () => { state.trust -= 25; },
+          next: 'may12_result_wait'
+        }
+      ]
+    },
+
+    // 面談から2〜3週間後の電話回答＆ATM記帳
+    may12_result_wait: {
+      action: () => {
+        advanceDate(5, 12, 20); // 4/22から約3週間経過（5月12日）
+        recordTx('4月末 自宅家賃・光熱費引き落とし', -68000, 'bank');
+      },
+      title: "📞 1年目 5月12日：【面談から約3週間後】審査結果の電話と通帳記帳",
+      text: "面談から約3週間……長い待ち時間の間にも、自分の生活費や自宅家賃が容赦なく引き落とされていく。\nそして5月12日、ついに担当者から審査結果の電話が鳴った！\n急いで銀行ATMへ走り、通帳を挿入する……。",
+      adviceText: "融資可決の場合でも、保証料や印紙代・手数料（約8%）が引かれた金額が『キンユウキカン』名義で振り込まれるぞ！",
+      choices: [
+        {
+          text: "通帳記帳ボタンを押して着金額を確認する",
+          action: () => {
+            const prevBank = state.bank;
+            let approvedAmount = 0;
+
+            if (state.mode === 'hard' || state.trust < 35) {
+              approvedAmount = 0;
+            } else if (state.equipPlan === 'new' && state.trust >= 65) {
+              // 500万枠可決（8%控除で 460万着金）
+              approvedAmount = 4600000;
+            } else if (state.trust >= 50) {
+              // 300万枠可決（8%控除で 276万着金）
+              approvedAmount = 2760000;
+            } else {
+              // 減額150万可決（8%控除で 138万着金）
+              approvedAmount = 1380000;
+            }
+
+            if (approvedAmount > 0) {
+              recordTx('融資着金（キンユウキカン・諸費8%控除後）', approvedAmount, 'bank');
+            }
+            state.lastPrevBank = prevBank;
+            state.lastDeposit = approvedAmount;
+          },
+          next: 'show_passbook_scene'
+        }
+      ]
+    },
+
+    show_passbook_scene: {
+      action: () => {
+        showPassbook(state.lastPrevBank, state.lastDeposit, 'may15_setup');
+      },
+      title: "記帳中...", text: "通帳に印字しています...", choices: []
+    },
+
+    // 店舗本契約＆設備・改装支払い
+    may15_setup: {
+      action: () => { advanceDate(5, 15, 3); },
+      title: "🏪 1年目 5月15日：店舗本契約と内装・厨房工事の支払い",
+      text: () => {
+        if (state.lastDeposit === 0) {
+          return `💀 【融資否決（着金 0円）】\n審査落ち……通帳の残高は増えなかった。\n物件の仮押さえは泣く泣くキャンセルし、残った自己資金で「間借り・屋台・出前」から這い上がるしかない！`;
+        } else {
+          return `🎉 【融資着金：${state.lastDeposit.toLocaleString()}円】\nさっそく15坪物件の本契約（敷金・保証金・前家賃等で 160万円）と、内装・改装工事費（140万円）の支払いへ進む！\n選択していた設備プラン（${state.equipPlan === 'new' ? '新品1,000万ローン' : '中古販売店一括'}）も確定する。`;
+        }
+      },
+      adviceText: "設備300万（契約160万＋改装140万）を払った後、手元に運転資金3ヶ月分（約150万〜200万）が残っているかが勝負だニャ！",
+      choices: () => {
+        if (state.lastDeposit === 0) {
+          return [{ text: "💀 自力・極小路線（知人の店の間借り交渉）へ切り替える", next: 'hard_negotiate' }];
+        }
+        return [
+          {
+            text: "契約金・内装工事費（計300万円）と設備費用を支払い、開店準備を完了する",
+            action: () => {
+              recordTx('店舗本契約金（敷金・礼金・前家賃等）', -1600000, 'bank');
+              recordTx('店舗内装・改装工事費', -1400000, 'bank');
+              if (state.equipPlan === 'new') {
+                recordTx('新品厨房機器 ローン頭金・諸費用', -300000, 'bank');
+                state.monthlyDebt += 300000; // 毎月30万のローン支払い
+              } else {
+                recordTx('中古販売店 厨房機器・家具一式購入', -850000, 'bank');
+              }
+            },
+            next: 'store_open_check'
+          }
+        ];
+      }
+    },
+
+    store_open_check: {
+      title: "📊 1年目 6月1日：開店直前の手元運転資金チェック",
+      text: () => {
+        const totalCash = state.bank + state.cash;
+        if (state.bank < 0) {
+          return `💀 【資金ショート（開店前パンク）】\n口座残高がマイナス（${state.bank.toLocaleString()}円）になり、工事代金の残金が払えなくなりました……。`;
+        }
+        return `15坪・12席の店舗が完成しました！\n現在の残高：口座 ${state.bank.toLocaleString()}円 ／ 現金 ${state.cash.toLocaleString()}円（合計 ${totalCash.toLocaleString()}円）。\n毎月の機器ローン返済は【${state.monthlyDebt.toLocaleString()}円】です。\nここから実際の営業（ワンオペかバイト雇用かなど）の荒波が始まります！`;
+      },
+      adviceText: "新品ローンを選んだ場合は毎月30万の返済＋家賃22万で、毎月52万以上の利益を出さないと即赤字だニャ！中古なら固定費が圧倒的に軽いぞ！",
+      choices: [
+        {
+          text: () => state.bank < 0 ? "資金ショートでゲームオーバーへ" : "🏆 第1章クリア（開業準備完了・次章の店舗営業編へ）",
+          next: () => state.bank < 0 ? 'gameover_money' : 'chapter1_clear'
+        }
+      ]
+    },
+
+    // 間借り・屋台・出前のリアルルート
+    hard_negotiate: {
+      action: () => { advanceDate(5, 18, 3); },
+      title: "🤝 1年目 5月18日：知人の店舗での間借り交渉の行方",
+      text: "実店舗の契約は諦め、かつての知人が経営するバーの昼間（11時〜16時）を間借りできないか頭を下げに行った。\n知人「うちも光熱費が上がってるから、売上歩合20%＋1日3,000円の固定協力金なら貸してやってもいいけど、どうする？」",
+      adviceText: "知人の店を借りられれば初期費用は最小限で済むが、もし条件が合わなければ『屋台』や『知人企業への弁当出前』で泥臭く稼ぐ道もあるニャ！",
+      choices: [
+        {
+          text: "🅰️ 知人の条件（歩合20%＋日額3,000円）を飲み、間借り営業をスタートする",
+          action: () => { recordTx('間借り保証金・初期材料仕入れ', -25000, 'cash'); },
+          next: 'hard_reality_days'
+        },
+        {
+          text: "🅱️ 条件が厳しいため断り、許可エリアでの『移動屋台＆知人への弁当出前』で始める",
+          action: () => { recordTx('屋台什器・弁当容器・食材仕入れ', -45000, 'cash'); },
+          next: 'hard_stall_days'
+        }
+      ]
+    },
+
+    hard_reality_days: {
+      action: () => {
+        advanceDate(6, 5, 15);
+        recordTx('5月末 自宅家賃・光熱費引き落とし', -68000, 'bank');
+      },
+      title: "🌧️ 1年目 6月5日：間借り営業のリアル（売上0円が続く恐怖）",
+      text: "間借り営業を開始して半月。現実は甘くなかった。\n雨の日は来客ゼロ（売上0円）が3日連続で続き、材料の牛乳やパンが廃棄になる。\n【好調な日の1日収支（14時間労働）】\n・売上 22,000円 － 原価 6,600円 － 知人への支払い 7,400円 － 自分の食費・雑費 2,500円 ＝ 手残り 5,500円。\n売上0円の日は赤字垂れ流しだ。どう対策する！？",
+      adviceText: "売上がない日に店の中で待っているだけでは何も変わらないニャ！外に出てビラを配るか、深夜バイトで現金を繋ぐのだ！",
+      choices: [
+        {
+          text: "🅰️ 営業後に毎日駅前で手書きビラ配り＆SNS発信＋深夜警備バイト（1日16時間無休）",
+          action: () => {
+            recordTx('深夜警備バイト代(12日分)＋間借り純利益', 165000, 'cash');
+            state.hp -= 10;
+          },
+          next: 'hard_breakthrough'
+        },
+        {
+          text: "🅱️ メニューを絞り原価率を20%に改善、近隣オフィスへの『ランチ予約配達』を開拓",
+          action: () => {
+            recordTx('オフィスランチ配達 固定売上純利益', 95000, 'cash');
+            state.hp -= 5;
+          },
+          next: 'hard_breakthrough'
+        }
+      ]
+    },
+
+    hard_stall_days: {
+      action: () => {
+        advanceDate(6, 5, 15);
+        recordTx('5月末 自宅家賃・光熱費引き落とし', -68000, 'bank');
+      },
+      title: "🍱 1年目 6月5日：屋台＆弁当出前の泥臭い日々",
+      text: "店舗を借りられなかったあなたは、朝5時から仕込みをして知人の会社や現場へ『手作り弁当の出前』を配達し、夕方は屋台でコーヒーと軽食を売る毎日（1日15時間労働）。\n天候に左右され売上0円の日もあったが、常連が少しずつ増え始めた！",
+      adviceText: "固定家賃がない分、売上がそのまま手残りになりやすいのが出前・屋台の強みだニャ！",
+      choices: [
+        {
+          text: "🅰️ 週末はイベント出店にも駆け回り、休みなしで資金をかき集める",
+          action: () => {
+            recordTx('弁当出前・イベント屋台 純利益累計', 180000, 'cash');
+            state.hp -= 9;
+          },
+          next: 'hard_breakthrough'
+        }
+      ]
+    },
+
+    hard_breakthrough: {
+      action: () => { advanceDate(6, 25, 20); },
+      title: "☀️ 1年目 6月25日：泥臭い実績が認めた逆転のチャンス",
+      text: "無休の16時間労働や出前・深夜バイトを耐え抜き、手元と口座に合計【約60万円】の現金と「毎日コツコツ稼いだリアルな売上帳簿」が残った！\nその帳簿を見た知人のオーナーから「真面目な君になら、うちの2号店の居抜きを格安で譲るよ」と声がかかる！",
+      adviceText: "融資ゼロから自力で実績と現金を残した勝利だニャ！次章はいよいよ自分の店での営業だ！",
+      choices: [
+        { text: "🏆 第1章クリア（自力逆転オーナー編へ）", next: 'chapter1_clear' }
+      ]
+    },
+
+    chapter1_clear: {
+      title: "🏆 第1章 クリア：開業準備・資金調達編 完了",
+      text: "リアルな初期投資・カレンダー経過・資格・融資審査の壁を乗り越え、あなたは開業のスタートラインに立ちました！\n\n【次回アップデート予定】\n・実店舗オープン後の『一人親方（ワンオペ）vs アルバイト雇用』の選択\n・客単価×回転数のリアル営業シミュレーション",
+      adviceText: "お疲れさまだニャ！次は『人を雇うか、一人で回すか』の経営最大の悩みどころが待っているぞ！",
+      choices: [
+        { text: "🔄 最初から別の条件（職業・新品/中古・銀行/公庫）で試す", next: 'start' }
+      ]
+    },
+
+    gameover_money: {
+      title: "💀 GAME OVER：資金ショート（開店前パンク）",
+      text: "物件契約金（160万）と内装工事費（140万）に加え、設備費用で口座がマイナスになりました。\n運転資金（3ヶ月分）を残す計算がいかに重要かを痛感する結果となりました……。",
+      adviceText: "設備投資にお金を使いすぎたニャ！中古販売店の活用や融資額とのバランスを見直すのだ！",
+      choices: [{ text: "🔄 最初からやり直す", next: 'start' }]
     }
   };
 
@@ -584,14 +946,23 @@
     document.getElementById('story-title').innerText = typeof scene.title === 'function' ? scene.title() : scene.title;
     document.getElementById('story-text').innerText = typeof scene.text === 'function' ? scene.text() : scene.text;
 
+    const specEl = document.getElementById('story-spec');
+    if (scene.spec) {
+      specEl.style.display = 'block';
+      specEl.innerText = typeof scene.spec === 'function' ? scene.spec() : scene.spec;
+    } else {
+      specEl.style.display = 'none';
+    }
+
     const choicesContainer = document.getElementById('choices-container');
     choicesContainer.innerHTML = '';
 
-    if (scene.choices) {
-      scene.choices.forEach(choice => {
+    const choiceList = typeof scene.choices === 'function' ? scene.choices() : scene.choices;
+    if (choiceList) {
+      choiceList.forEach(choice => {
         const btn = document.createElement('button');
         btn.className = 'choice-btn';
-        btn.innerText = choice.text;
+        btn.innerText = typeof choice.text === 'function' ? choice.text() : choice.text;
         btn.onclick = () => {
           if (choice.action) choice.action();
           const next = typeof choice.next === 'function' ? choice.next() : choice.next;
