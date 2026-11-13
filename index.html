@@ -142,19 +142,20 @@
 
     .ledger-log {
       margin-top: 8px;
-      max-height: 95px;
+      max-height: 110px;
       overflow-y: auto;
       border-top: 1px dashed #bbb;
       padding-top: 6px;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: #222;
     }
 
     .ledger-entry {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
       border-bottom: 1px dotted #e0e0e0;
+      padding-bottom: 2px;
     }
 
     .story-card {
@@ -353,7 +354,7 @@
     <div id="calendar-body">
       <div class="calendar-grid" id="calendar-grid"></div>
       <div class="ledger-log" id="ledger-log">
-        <div class="ledger-entry"><span>4/1 初期手持ち現金</span><span>+100,000円</span></div>
+        <div class="ledger-entry"><span>4/1 初期手持ち現金</span><span>+100,000円 (残高:500,000円)</span></div>
       </div>
     </div>
   </div>
@@ -399,10 +400,10 @@
     trust: 0,
     hasTestNote: false,
     lenderType: 'public', // 'public' (公的融資) or 'bank' (民間銀行)
-    equipPlan: 'inuki',   // 'inuki' (居抜きベース) or 'new'
+    equipPlan: 'inuki',   // 'inuki' (居抜きベース) or 'new' (新品購入)
     monthlyDebt: 0,
     taxSupport: 'none',
-    logs: [{ date: '4/1', desc: '初期手持ち現金（口座別50万）', amount: 100000, type: 'cash' }],
+    logs: [{ date: '4/1', desc: '初期手持ち現金', amountStr: '+100,000円', balanceStr: '500,000円' }],
     currentSceneKey: 'start'
   };
 
@@ -421,10 +422,13 @@
     }
     const sign = amount >= 0 ? '+' : '';
     const label = target === 'bank' ? '[口座]' : '[現金]';
+    const currentTotalBalance = state.bank; // 基準となる口座残高を表示
+    
     state.logs.unshift({
       date: `${state.month}/${state.day}`,
       desc: `${label} ${desc}`,
-      amountStr: `${sign}${amount.toLocaleString()}円`
+      amountStr: `${sign}${amount.toLocaleString()}円`,
+      balanceStr: `${currentTotalBalance.toLocaleString()}円`
     });
   }
 
@@ -463,7 +467,10 @@
     logEl.innerHTML = state.logs.map(l => `
       <div class="ledger-entry">
         <span>${l.date} ${l.desc}</span>
-        <span style="font-weight:bold; color:${l.amountStr && l.amountStr.startsWith('-') ? '#b00020' : '#0b6623'};">${l.amountStr || ''}</span>
+        <span style="text-align:right;">
+          <span style="font-weight:bold; color:${l.amountStr && l.amountStr.startsWith('-') ? '#b00020' : '#0b6623'};">${l.amountStr || ''}</span>
+          <span style="color:#666; font-size:0.7rem; margin-left:4px;">(残高:${l.balanceStr})</span>
+        </span>
       </div>
     `).join('');
   }
@@ -505,15 +512,15 @@
     `;
   }
 
-  function showPassbook(prevBank, depositAmount, nextScene) {
+  function showPassbook(prevBank, depositAmount, nextScene, noteText = '振込：ユウシキンユウ（諸費控除後）') {
     const modal = document.getElementById('passbook-modal');
     const content = document.getElementById('passbook-content');
     const correctBalance = prevBank + depositAmount;
-    state.bank = correctBalance; // 完全に計算上の整合性を一致させる
+    state.bank = correctBalance;
 
     content.innerHTML = `
       <div class="passbook-line"><span>前月残高</span><span>￥${prevBank.toLocaleString()}</span></div>
-      <div class="passbook-line" style="color: #003399; font-weight: bold;"><span>振込：ユウシキンユウ（諸費控除後）</span><span>￥${depositAmount.toLocaleString()}</span></div>
+      <div class="passbook-line" style="color: #003399; font-weight: bold;"><span>${noteText}</span><span>￥${depositAmount.toLocaleString()}</span></div>
       <div class="passbook-line" style="font-weight: bold; border-top: 1.5px solid #222;"><span>差引残高</span><span>￥${correctBalance.toLocaleString()}</span></div>
     `;
     modal.style.display = 'flex';
@@ -551,16 +558,16 @@
     setup_standard: {
       action: () => { state.mode = 'standard'; state.trust = 30; state.planProgress = 10; },
       title: "📄 1年目 4月1日：脱サラ創業の決意と資金調達先選択",
-      text: "あなたは正社員。今月末で退職し、念願のカフェ（15坪・12席規模）を開業する決意をした。\nまずはどこから融資を引っ張るか、最初に選ぼう。",
+      text: "あなたは正社員。今月末で退職し、念願のカフェ（15坪・12席規模）を開業する決意をした。\nまずはどこから資金を調達するか選ぼう。",
       adviceText: "公的融資は金利が低く創業時に最適だぞ！民間銀行は実績や税理士の紹介がないと厳しいニャ。",
       choices: [
         {
-          text: "🏛️ 公的融資に申し込むルートへ",
+          text: "🏛️ 公的融資（低金利・創業支援）に申し込むルートへ",
           action: () => { state.lenderType = 'public'; },
           next: 'license_check'
         },
         {
-          text: "🏦 地元の地方銀行（要預金実績・税理士紹介）に挑むルートへ",
+          text: "🏦 地元の民間銀行（要預金実績・税理士紹介）に挑むルートへ",
           action: () => { state.lenderType = 'bank'; state.trust -= 10; },
           next: 'license_check'
         }
@@ -597,7 +604,6 @@
       choices: [{ text: "物件仮押えと計画策定へ進む（4月10日へ）", next: 'day10_property' }]
     },
 
-    // 物件仮押さえ・15坪12席見取り図・居抜きベース見積もり
     day10_property: {
       action: () => {
         advanceDate(4, 10, 4);
@@ -605,17 +611,17 @@
         state.planProgress += 30;
       },
       title: "📐 1年目 4月10日：物件仮押さえと試算",
-      text: "駅前のカフェで計画書を作成中。融資申し込みには「店舗の見取り図（15坪：テーブル2卓×各席2席、カウンター4席など）」と、厨房機器の見積もりが必要だ。\nどの規模で見積もりを作る？",
+      text: "駅前のカフェで計画書を作成中。融資申し込みには「店舗の見取り図（15坪）」と、厨房機器の見積もりが必要だ。\nどのようなプランで申請する？",
       spec: "【物件仮押さえスペック】\n・広さ：15坪（約50㎡）\n・客席：計12席\n・資金使途計画：設備資金＋運転資金（3ヶ月分）",
-      adviceText: "新品フル装備は予算的に厳しいため、基本は『居抜き物件』をベースにして足りない厨房機器や皿などを買い足す形が現実的だニャ！",
+      adviceText: "新品購入の際は『融資申し込み時に金額と振込先を伝え、融資決定時に直接商品購入先に振り込まれ、残りが口座に振り込まれる』仕組みになっているぞ！",
       choices: [
         {
-          text: "🅰️ 【中古プラン】（融資希望300万円）中古販売人を活用し、家賃光熱費の3ヶ月分の運転資金を手元に残す堅実設計",
+          text: "🅰️ 【中古・居抜きベースプラン】（融資300万）不足分を買い足し、運転資金を手元に残す堅実設計",
           action: () => { state.equipPlan = 'inuki'; state.trust += 10; },
           next: 'day15_apply'
         },
         {
-          text: "🅱️ 【新品プラン】（融資希望500万円）内装・厨房をすべて新品で初期見積もり、万全の状態でスタートする",
+          text: "🅱️ 【新品購入プラン】（融資500万）設備代金は購入先へ直接振込、残金を手元資金として口座に確保",
           action: () => { state.equipPlan = 'new'; },
           next: 'day15_apply'
         }
@@ -654,20 +660,34 @@
 
     may15_result_wait: {
       action: () => {
-        advanceDate(5, 15, 23); // 4/22から5/15まで約3週間
+        advanceDate(5, 15, 23);
         recordTx('4月末 家賃・光熱費引き落とし', -68000, 'bank');
       },
       title: "📞 1年目 5月中旬：ついに結果の電話連絡",
-      text: "スマホが鳴った。「融資の件でお伝えが……」\n銀行ATMへ向かい、通帳を挿入して記帳ボタンを押す瞬間。",
-      adviceText: "ついに融資実行の判定が出るニャ！正確な数字で通帳記帳を確認するぞ！",
+      text: "スマホが鳴った。「融資の件でお伝えが……無事に審査が通過しました！」\n銀行ATMへ向かい、通帳を挿入して記帳ボタンを押す瞬間。",
+      adviceText: "新品購入の場合は設備代金が直接購入先に振込され、残りが口座に入金されるぞ！通帳を確認するのだ！",
       choices: [
         {
           text: "通帳記帳して結果を確認する",
           action: () => {
             const prevBank = state.bank;
-            let approvedAmount = (state.equipPlan === 'new') ? 4600000 : 2760000; // 8%控除後の実効着金
+            let approvedAmount = 0;
+            let noteStr = '';
+
+            if (state.equipPlan === 'new') {
+              // 新品購入：設備代金直接振込を除いた残り分が口座着金
+              approvedAmount = 2600000;
+              noteStr = '振込：公的融資(設備直振込残金)';
+            } else {
+              // 居抜きベース
+              approvedAmount = 2760000;
+              noteStr = '振込：公的融資(諸費控除後)';
+            }
+
+            recordTx('公的融資実行（口座入金分）', approvedAmount, 'bank');
             state.lastPrevBank = prevBank;
             state.lastDeposit = approvedAmount;
+            state.passNote = noteStr;
           },
           next: 'show_passbook_scene'
         }
@@ -676,7 +696,7 @@
 
     show_passbook_scene: {
       action: () => {
-        showPassbook(state.lastPrevBank, state.lastDeposit, 'may20_setup');
+        showPassbook(state.lastPrevBank, state.lastDeposit, 'may20_setup', state.passNote);
       },
       title: "記帳中...", text: "通帳に印字しています...", choices: []
     },
@@ -684,14 +704,16 @@
     may20_setup: {
       action: () => { advanceDate(5, 20, 5); },
       title: "🎉 1年目 5月下旬：オープンへ向けた本格始動",
-      text: "【融資実行：手元資金＋3ヶ月分の運転資金確保】\n見事に融資が実行され、家賃・光熱費の3ヶ月分がしっかり手元に残る安全な資金計画で店舗契約へ進める！\n居抜き物件をベースに足りない厨房機器や皿などを買い揃えていく。",
-      adviceText: "無事に融資が実行されたニャ！ここから自力に逃げる不自然な選択肢はなく、堂々と実店舗の開店準備を進めるのだ！",
+      text: "【融資実行完了】\n新品購入分は直接購入先へ送金され、手元に残る運転資金も無事に口座へ着金した！\nいよいよ店舗契約と最終の準備へ進む。",
+      adviceText: "完璧な資金調達だニャ！次はオープン後の営業編の構築へ進むぞ！",
       choices: [
         {
           text: "15坪の見取り図を元に店舗契約と設営へ進む",
           action: () => {
             recordTx('店舗契約金（敷金・前家賃等）', -1600000, 'bank');
-            recordTx('不足厨房機器・食器買い足し費用', -850000, 'bank');
+            if (state.equipPlan === 'inuki') {
+              recordTx('不足厨房機器・食器買い足し費用', -850000, 'bank');
+            }
           },
           next: 'chapter1_clear'
         }
@@ -700,8 +722,8 @@
 
     chapter1_clear: {
       title: "🏆 第1章 クリア：資金調達・店舗契約編 完了",
-      text: "公的融資の実行、居抜き物件の契約、そして不足機器・皿の買い足し準備を完了し、あなたは店舗オーナーとしての第一歩を踏み出しました！\n\n【次回アップデート予定】\n・オープン後の『一人親方かアルバイト雇用か』の選択\n・客単価×回転数のリアル営業シミュレーション",
-      adviceText: "完璧な資金調達とリアルな実務プロセスだったニャ！次はオープン後の営業編でお会いしよう！",
+      text: "公的融資の実行、店舗契約、そして必要な機器・備品の調達準備を完了し、あなたは店舗オーナーとしての第一歩を踏み出しました！\n\n【次回アップデート予定】\n・オープン後の『一人親方かアルバイト雇用か』の選択\n・客単価×回転数のリアル営業シミュレーション",
+      adviceText: "素晴らしい経営判断だったニャ！次はオープン後の営業編でお会いしよう！",
       choices: [
         { text: "🔄 最初から別の条件でプレイし直す", next: 'start' }
       ]
