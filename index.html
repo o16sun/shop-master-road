@@ -501,7 +501,7 @@
     const scene = scenes[state.currentSceneKey];
     const body = document.getElementById('advisor-body');
     const txt = typeof scene.adviceText === 'function' ? scene.adviceText() : scene.adviceText;
-    body.innerHTML = `<p style="color: #111; font-weight: bold;">🐱 '数字の根拠と手元キャッシュの厚みが命だニャ！'</p>`;
+    body.innerHTML = `<p style="color: #111; font-weight: bold;">🐱 「${txt || '数字の根拠と手元キャッシュの厚みが命だニャ！'}」</p>`;
   }
 
   function resetAdviceBox() {
@@ -534,7 +534,6 @@
     if (next) renderScene(next);
   }
 
-  // すべての進行・収支は「選択肢が選ばれた瞬間」にのみ実行されるよう修正
   const scenes = {
     start: {
       title: "☕ 主人公のバックボーン（前職と経験）選択",
@@ -667,17 +666,27 @@
       ]
     },
 
+    // ⭐️ 面談の選択肢を復活！
     day22_interview: {
       title: "⚖️ 1年目 4月22日：融資面談の実施",
-      text: "窓口での面談。「万が一赤字が続いた場合、どのように返済を継続されますか？」\n担当者の鋭い質問に対し、手元資金と事業計画の根拠を落ち着いて説明した。",
-      adviceText: "面談が無事終われば、あとは結果待ちの2〜3週間だニャ。生活費の管理に気を付けるのだ！",
+      text: "窓口での面談。「万が一赤字が続いた場合、どのように返済を継続されますか？」\n担当者の鋭い目があなたを見つめる。どう答える？",
+      adviceText: "面談での受け答えは信頼度を左右する重大なポイントだニャ！『バイトをしてでも返す』という現実的な覚悟を見せるのが王道だぞ！",
       choices: [
         {
-          text: "面談を終え、結果待ちの期間（5月中旬）へ進む",
+          text: "🅰️ 『最悪の場合でも、夜間や早朝の単独アルバイト等で返済原資を100%確保します』",
           action: () => {
             advanceDate(4, 22, 7);
             recordTx('面談会場 往復電車賃', -960, 'cash');
-            state.trust += 15;
+            state.trust += 20;
+          },
+          next: 'may15_result_wait'
+        },
+        {
+          text: "🅱️ 『私のカフェは絶対にバズるので赤字になる想定はしていません』",
+          action: () => {
+            advanceDate(4, 22, 7);
+            recordTx('面談会場 往復電車賃', -960, 'cash');
+            state.trust -= 25;
           },
           next: 'may15_result_wait'
         }
@@ -758,7 +767,6 @@
     const scene = scenes[sceneKey];
     if (!scene) return;
 
-    // シーン表示時の自動実行（scene.action）を完全に廃止し、選択肢クリック時のみ動かすように修正
     updateUI();
     resetAdviceBox();
 
