@@ -142,7 +142,7 @@
 
     .ledger-log {
       margin-top: 8px;
-      max-height: 110px;
+      max-height: 125px;
       overflow-y: auto;
       border-top: 1px dashed #bbb;
       padding-top: 6px;
@@ -153,9 +153,10 @@
     .ledger-entry {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 3px;
+      align-items: flex-start;
+      margin-bottom: 4px;
       border-bottom: 1px dotted #e0e0e0;
-      padding-bottom: 2px;
+      padding-bottom: 3px;
     }
 
     .story-card {
@@ -354,7 +355,13 @@
     <div id="calendar-body">
       <div class="calendar-grid" id="calendar-grid"></div>
       <div class="ledger-log" id="ledger-log">
-        <div class="ledger-entry"><span>4/1 初期手持ち現金</span><span>+100,000円 (残高:500,000円)</span></div>
+        <div class="ledger-entry">
+          <span>4/1 初期手持ち現金</span>
+          <span style="text-align:right;">
+            <div style="font-weight:bold; color:#0b6623;">+100,000円</div>
+            <div style="color:#666; font-size:0.68rem;">残高: 500,000円</div>
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -399,8 +406,8 @@
     planProgress: 0,
     trust: 0,
     hasTestNote: false,
-    lenderType: 'public', // 'public' (公的融資) or 'bank' (民間銀行)
-    equipPlan: 'inuki',   // 'inuki' (居抜きベース) or 'new' (新品購入)
+    lenderType: 'public',
+    equipPlan: 'inuki',
     monthlyDebt: 0,
     taxSupport: 'none',
     logs: [{ date: '4/1', desc: '初期手持ち現金', amountStr: '+100,000円', balanceStr: '500,000円' }],
@@ -422,7 +429,7 @@
     }
     const sign = amount >= 0 ? '+' : '';
     const label = target === 'bank' ? '[口座]' : '[現金]';
-    const currentTotalBalance = state.bank; // 基準となる口座残高を表示
+    const currentTotalBalance = state.bank;
     
     state.logs.unshift({
       date: `${state.month}/${state.day}`,
@@ -468,8 +475,8 @@
       <div class="ledger-entry">
         <span>${l.date} ${l.desc}</span>
         <span style="text-align:right;">
-          <span style="font-weight:bold; color:${l.amountStr && l.amountStr.startsWith('-') ? '#b00020' : '#0b6623'};">${l.amountStr || ''}</span>
-          <span style="color:#666; font-size:0.7rem; margin-left:4px;">(残高:${l.balanceStr})</span>
+          <div style="font-weight:bold; color:${l.amountStr && l.amountStr.startsWith('-') ? '#b00020' : '#0b6623'};">${l.amountStr || ''}</div>
+          <div style="color:#666; font-size:0.68rem;">残高: ${l.balanceStr}</div>
         </span>
       </div>
     `).join('');
@@ -512,7 +519,7 @@
     `;
   }
 
-  function showPassbook(prevBank, depositAmount, nextScene, noteText = '振込：ユウシキンユウ（諸費控除後）') {
+  function showPassbook(prevBank, depositAmount, nextScene, noteText = '振込：公的融資(諸費控除後)') {
     const modal = document.getElementById('passbook-modal');
     const content = document.getElementById('passbook-content');
     const correctBalance = prevBank + depositAmount;
@@ -675,11 +682,9 @@
             let noteStr = '';
 
             if (state.equipPlan === 'new') {
-              // 新品購入：設備代金直接振込を除いた残り分が口座着金
               approvedAmount = 2600000;
               noteStr = '振込：公的融資(設備直振込残金)';
             } else {
-              // 居抜きベース
               approvedAmount = 2760000;
               noteStr = '振込：公的融資(諸費控除後)';
             }
