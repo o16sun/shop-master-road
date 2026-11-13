@@ -354,15 +354,7 @@
     </div>
     <div id="calendar-body">
       <div class="calendar-grid" id="calendar-grid"></div>
-      <div class="ledger-log" id="ledger-log">
-        <div class="ledger-entry">
-          <span>4/1 初期手持ち現金</span>
-          <span style="text-align:right;">
-            <div style="font-weight:bold; color:#0b6623;">+100,000円</div>
-            <div style="color:#666; font-size:0.68rem;">現金残高: 100,000円</div>
-          </span>
-        </div>
-      </div>
+      <div class="ledger-log" id="ledger-log"></div>
     </div>
   </div>
 
@@ -429,11 +421,11 @@
     }
     const sign = amount >= 0 ? '+' : '';
     const label = target === 'bank' ? '[口座]' : '[現金]';
-    // ターゲットに応じて、現金の動きなら現金残高、口座の動きなら口座残高を表示する
     const currentBalance = (target === 'bank') ? state.bank : state.cash;
     const balanceUnit = (target === 'bank') ? '口座残高' : '現金残高';
     
-    state.logs.unshift({
+    // pushに変更し、古い履歴が上、新しい履歴が下に積まれるようにする（通帳と同じ時系列）
+    state.logs.push({
       date: `${state.month}/${state.day}`,
       desc: `${label} ${desc}`,
       amountStr: `${sign}${amount.toLocaleString()}円`,
