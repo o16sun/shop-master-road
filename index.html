@@ -359,7 +359,7 @@
           <span>4/1 初期手持ち現金</span>
           <span style="text-align:right;">
             <div style="font-weight:bold; color:#0b6623;">+100,000円</div>
-            <div style="color:#666; font-size:0.68rem;">残高: 500,000円</div>
+            <div style="color:#666; font-size:0.68rem;">現金残高: 100,000円</div>
           </span>
         </div>
       </div>
@@ -410,7 +410,7 @@
     equipPlan: 'inuki',
     monthlyDebt: 0,
     taxSupport: 'none',
-    logs: [{ date: '4/1', desc: '初期手持ち現金', amountStr: '+100,000円', balanceStr: '500,000円' }],
+    logs: [{ date: '4/1', desc: '初期手持ち現金', amountStr: '+100,000円', balanceStr: '100,000円 (現金)' }],
     currentSceneKey: 'start'
   };
 
@@ -429,13 +429,15 @@
     }
     const sign = amount >= 0 ? '+' : '';
     const label = target === 'bank' ? '[口座]' : '[現金]';
-    const currentTotalBalance = state.bank;
+    // ターゲットに応じて、現金の動きなら現金残高、口座の動きなら口座残高を表示する
+    const currentBalance = (target === 'bank') ? state.bank : state.cash;
+    const balanceUnit = (target === 'bank') ? '口座残高' : '現金残高';
     
     state.logs.unshift({
       date: `${state.month}/${state.day}`,
       desc: `${label} ${desc}`,
       amountStr: `${sign}${amount.toLocaleString()}円`,
-      balanceStr: `${currentTotalBalance.toLocaleString()}円`
+      balanceStr: `${currentBalance.toLocaleString()}円 (${balanceUnit})`
     });
   }
 
