@@ -398,7 +398,7 @@
     planProgress: 0,
     trust: 0,
     hasTestNote: false,
-    lenderType: 'public',
+    lenderType: 'public', // 'public' or 'bank'
     equipPlan: 'inuki',
     monthlyDebt: 0,
     taxSupport: 'none',
@@ -512,7 +512,7 @@
     `;
   }
 
-  function showPassbook(prevBank, depositAmount, nextScene, noteText = '振込：公的融資(諸費控除後)') {
+  function showPassbook(prevBank, depositAmount, nextScene, noteText) {
     const modal = document.getElementById('passbook-modal');
     const content = document.getElementById('passbook-content');
     const correctBalance = prevBank + depositAmount;
@@ -580,7 +580,7 @@
       choices: [
         {
           text: "物件の仮押さえと計画策定へ（4月10日へ）",
-          action: () => { state.mode = 'experienced'; state.trust = 60; state.planProgress = 30; state.hasLicense = true; },
+          action: () => { state.mode = 'experienced'; state.trust = 60; state.planProgress = 30; state.hasLicense = true; state.lenderType = 'public'; },
           next: 'day10_property'
         }
       ]
@@ -595,6 +595,7 @@
           text: "🏃 資格を取って知人の店に間借り交渉に行く",
           action: () => {
             state.mode = 'hard';
+            state.lenderType = 'none';
             advanceDate(4, 5, 4);
             recordTx('移動電車賃・手土産代', -2400, 'cash');
           },
@@ -622,7 +623,10 @@
 
     day10_property: {
       title: "📐 1年目 4月10日：物件仮押さえと試算",
-      text: "駅前のカフェで計画書を作成中。融資申し込みには「店舗の見取り図（15坪）」と、厨房機器の見取り図・見積もりが必要だ。\nどのようなプランで申請する？",
+      text: () => {
+        const lenderLabel = state.lenderType === 'bank' ? '民間銀行' : '公的融資';
+        return `駅前のカフェで計画書を作成中。${lenderLabel}への融資申し込みには「店舗の見取り図（15坪）」と、厨房機器の見取り図・見積もりが必要だ。\nどのようなプランで申請する？`;
+      },
       spec: "【物件仮押さえスペック】\n・広さ：15坪（約50㎡）\n・客席：計12席\n・資金使途計画：設備資金＋運転資金（3ヶ月分）",
       adviceText: "新品購入の際は『融資申し込み時に金額と振込先を伝え、融資決定時に直接商品購入先に振り込まれ、残りが口座に振り込まれる』仕組みになっているぞ！",
       choices: [
@@ -652,7 +656,10 @@
 
     day15_apply: {
       title: "📝 1年目 4月15日：融資の正式申し込み",
-      text: "仮押さえ図面と見積書を添えて、公的融資の窓口へ正式に申し込みを行った。\nここから面談、そして結果が出るまで数週間を要する。",
+      text: () => {
+        const lenderLabel = state.lenderType === 'bank' ? '民間銀行' : '公的融資';
+        return `仮押さえ図面と見積書を添えて、${lenderLabel}の窓口へ正式に申し込みを行った。\nここから面談、そして結果が出るまで数週間を要する。`;
+      },
       adviceText: "申し込みから面談日まで約1週間、そこから結果の連絡までさらに2〜3週間かかるリアルな待機期間だニャ！",
       choices: [
         {
@@ -666,10 +673,12 @@
       ]
     },
 
-    // ⭐️ 面談の選択肢を復活！
     day22_interview: {
       title: "⚖️ 1年目 4月22日：融資面談の実施",
-      text: "窓口での面談。「万が一赤字が続いた場合、どのように返済を継続されますか？」\n担当者の鋭い目があなたを見つめる。どう答える？",
+      text: () => {
+        const lenderLabel = state.lenderType === 'bank' ? '民間銀行の担当者' : '公的融資の担当者';
+        return `${lenderLabel}との面談。「万が一赤字が続いた場合、どのように返済を継続されますか？」\n担当者の鋭い目があなたを見つめる。どう答える？`;
+      },
       adviceText: "面談での受け答えは信頼度を左右する重大なポイントだニャ！『バイトをしてでも返す』という現実的な覚悟を見せるのが王道だぞ！",
       choices: [
         {
@@ -707,16 +716,17 @@
             const prevBank = state.bank;
             let approvedAmount = 0;
             let noteStr = '';
+            const lenderPrefix = state.lenderType === 'bank' ? '民間銀行' : '公的融資';
 
             if (state.equipPlan === 'new') {
               approvedAmount = 2600000;
-              noteStr = '振込：公的融資(設備直振込残金)';
+              noteStr = `振込：${lenderPrefix}(設備直振込残金)`;
             } else {
               approvedAmount = 2760000;
-              noteStr = '振込：公的融資(諸費控除後)';
+              noteStr = `振込：${lenderPrefix}(諸費控除後)`;
             }
 
-            recordTx('公的融資実行（口座入金分）', approvedAmount, 'bank');
+            recordTx(`${lenderPrefix}実行（口座入金分）`, approvedAmount, 'bank');
             state.lastPrevBank = prevBank;
             state.lastDeposit = approvedAmount;
             state.passNote = noteStr;
@@ -726,11 +736,14 @@
       ]
     },
 
+    // ⭐️ モーダルを開くアクションを復活させ、止まらないように修正
     show_passbook_scene: {
+      title: "記帳中...",
+      text: "通帳に印字しています...",
+      choices: [],
       action: () => {
         showPassbook(state.lastPrevBank, state.lastDeposit, 'may20_setup', state.passNote);
-      },
-      title: "記帳中...", text: "通帳に印字しています...", choices: []
+      }
     },
 
     may20_setup: {
@@ -754,7 +767,7 @@
 
     chapter1_clear: {
       title: "🏆 第1章 クリア：資金調達・店舗契約編 完了",
-      text: "公的融資の実行、店舗契約、そして必要な機器・備品の調達準備を完了し、あなたは店舗オーナーとしての第一歩を踏み出しました！\n\n【次回アップデート予定】\n・オープン後の『一人親方かアルバイト雇用か』の選択\n・客単価×回転数のリアル営業シミュレーション",
+      text: "融資の実行、店舗契約、そして必要な機器・備品の調達準備を完了し、あなたは店舗オーナーとしての第一歩を踏み出しました！\n\n【次回アップデート予定】\n・オープン後の『一人親方かアルバイト雇用か』の選択\n・客単価×回転数のリアル営業シミュレーション",
       adviceText: "素晴らしい経営判断だったニャ！次はオープン後の営業編でお会いしよう！",
       choices: [
         { text: "🔄 最初から別の条件でプレイし直す", next: 'start' }
@@ -797,6 +810,11 @@
         };
         choicesContainer.appendChild(btn);
       });
+    }
+
+    // ⭐️ シーン表示時の表示用アクション（モーダル表示等）のみここで実行
+    if (scene.action) {
+      scene.action();
     }
   }
 
