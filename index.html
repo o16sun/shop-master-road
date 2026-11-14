@@ -385,26 +385,30 @@
 </div>
 
 <script>
-  let state = {
-    year: 1,
-    month: 4,
-    day: 1,
-    mode: '',
-    hp: 20,
-    maxHp: 20,
-    cash: 100000,
-    bank: 500000,
-    hasLicense: false,
-    planProgress: 0,
-    trust: 0,
-    hasTestNote: false,
-    lenderType: 'public', // 'public' or 'bank'
-    equipPlan: 'inuki',
-    monthlyDebt: 0,
-    taxSupport: 'none',
-    logs: [{ date: '4/1', desc: '初期手持ち現金', amountStr: '+100,000円', balanceStr: '100,000円 (現金)' }],
-    currentSceneKey: 'start'
-  };
+  let state = {};
+
+  function resetGameState() {
+    state = {
+      year: 1,
+      month: 4,
+      day: 1,
+      mode: '',
+      hp: 20,
+      maxHp: 20,
+      cash: 100000,
+      bank: 500000,
+      hasLicense: false,
+      planProgress: 0,
+      trust: 0,
+      hasTestNote: false,
+      lenderType: 'public',
+      equipPlan: 'inuki',
+      monthlyDebt: 0,
+      taxSupport: 'none',
+      logs: [{ date: '4/1', desc: '初期手持ち現金', amountStr: '+100,000円', balanceStr: '100,000円 (現金)' }],
+      currentSceneKey: 'start'
+    };
+  }
 
   let calVisible = true;
   function toggleCalendar() {
@@ -588,7 +592,7 @@
 
     setup_hard: {
       title: "💀 1年目 4月1日：無職・実績ゼロからの挑戦",
-      text: "前職を退職し無職。飲食店経験もゼロ。手元には現金10万円と口座の50万円のみ。\n銀行も公庫も1円も貸してくれない現実の中、まずは知人の店の間借り交渉に動くか……。",
+      text: "前職を退職し無職。飲食店経験もゼロ。手元には現金10万円と口座の50万円のみ。\n銀行も公庫も1円も貸してくれない現実の中、まずは資格を取って知人の店の間借り交渉に動くか……。",
       adviceText: "無職ルートは融資0円確定だニャ！自力で現金を残す泥臭いルートを進むのだ！",
       choices: [
         {
@@ -596,8 +600,9 @@
           action: () => {
             state.mode = 'hard';
             state.lenderType = 'none';
+            state.hasLicense = true;
             advanceDate(4, 5, 4);
-            recordTx('移動電車賃・手土産代', -2400, 'cash');
+            recordTx('食品衛生講習・移動電車賃・手土産代', -14400, 'cash');
           },
           next: 'hard_negotiate'
         }
@@ -736,7 +741,6 @@
       ]
     },
 
-    // ⭐️ モーダルを開くアクションを復活させ、止まらないように修正
     show_passbook_scene: {
       title: "記帳中...",
       text: "通帳に印字しています...",
@@ -765,12 +769,100 @@
       ]
     },
 
+    // ⭐️ ハードモード専用：知人の店舗での間借り交渉〜逆転劇
+    hard_negotiate: {
+      title: "🤝 1年目 4月12日：知人の店舗での間借り交渉の行方",
+      text: "実店舗の契約は諦め、かつての知人が経営するバーの昼間（11時〜16時）を間借りできないか頭を下げに行った。\n知人「うちも光熱費が上がってるから、売上歩合20%＋1日3,000円の固定協力金なら貸してやってもいいけど、どうする？」",
+      adviceText: "知人の店を借りられれば初期費用は最小限で済むが、もし条件が合わなければ『屋台』や『知人企業への弁当出前』で泥臭く稼ぐ道もあるニャ！",
+      choices: [
+        {
+          text: "🅰️ 知人の条件（歩合20%＋日額3,000円）を飲み、間借り営業をスタートする",
+          action: () => {
+            advanceDate(4, 12, 7);
+            recordTx('間借り保証金・初期材料仕入れ', -25000, 'cash');
+          },
+          next: 'hard_reality_days'
+        },
+        {
+          text: "🅱️ 条件が厳しいため断り、許可エリアでの『移動屋台＆知人への弁当出前』で始める",
+          action: () => {
+            advanceDate(4, 12, 7);
+            recordTx('屋台什器・弁当容器・食材仕入れ', -45000, 'cash');
+          },
+          next: 'hard_stall_days'
+        }
+      ]
+    },
+
+    hard_reality_days: {
+      title: "🌧️ 1年目 5月10日：間借り営業のリアル（売上0円が続く恐怖）",
+      text: "間借り営業を開始して1ヶ月。現実は甘くなかった。\n雨の日は来客ゼロ（売上0円）が3日連続で続き、材料の牛乳やパンが廃棄になる。\n【好調な日の1日収支（14時間労働）】\n・売上 22,000円 － 原価 6,600円 － 知人への支払い 7,400円 － 自分の食費・雑費 2,500円 ＝ 手残り 5,500円。\n売上0円の日は赤字垂れ流しだ。どう対策する！？",
+      adviceText: "売上がない日に店の中で待っているだけでは何も変わらないニャ！外に出てビラを配るか、深夜バイトで現金を繋ぐのだ！",
+      choices: [
+        {
+          text: "🅰️ 営業後に毎日駅前で手書きビラ配り＆SNS発信＋深夜警備バイト（1日16時間無休）",
+          action: () => {
+            advanceDate(5, 10, 28);
+            recordTx('4月末 自宅家賃・光熱費引き落とし', -68000, 'bank');
+            recordTx('深夜警備バイト代(12日分)＋間借り純利益', 165000, 'cash');
+            state.hp -= 10;
+          },
+          next: 'hard_breakthrough'
+        },
+        {
+          text: "🅱️ メニューを絞り原価率を20%に改善、近隣オフィスへの『ランチ予約配達』を開拓",
+          action: () => {
+            advanceDate(5, 10, 28);
+            recordTx('4月末 自宅家賃・光熱費引き落とし', -68000, 'bank');
+            recordTx('オフィスランチ配達 固定売上純利益', 95000, 'cash');
+            state.hp -= 5;
+          },
+          next: 'hard_breakthrough'
+        }
+      ]
+    },
+
+    hard_stall_days: {
+      title: "🍱 1年目 5月10日：屋台＆弁当出前の泥臭い日々",
+      text: "店舗を借りられなかったあなたは、朝5時から仕込みをして知人の会社や現場へ『手作り弁当の出前』を配達し、夕方は屋台でコーヒーと軽食を売る毎日（1日15時間労働）。\n天候に左右され売上0円の日もあったが、常連が少しずつ増え始めた！",
+      adviceText: "固定家賃がない分、売上がそのまま手残りになりやすいのが出前・屋台の強みだニャ！",
+      choices: [
+        {
+          text: "🅰️ 週末はイベント出店にも駆け回り、休みなしで資金をかき集める",
+          action: () => {
+            advanceDate(5, 10, 28);
+            recordTx('4月末 自宅家賃・光熱費引き落とし', -68000, 'bank');
+            recordTx('弁当出前・イベント屋台 純利益累計', 180000, 'cash');
+            state.hp -= 9;
+          },
+          next: 'hard_breakthrough'
+        }
+      ]
+    },
+
+    hard_breakthrough: {
+      title: "☀️ 1年目 6月15日：泥臭い実績が認めた逆転のチャンス",
+      text: "無休の16時間労働や出前・深夜バイトを耐え抜き、手元と口座にしっかりとした現金と「毎日コツコツ稼いだリアルな売上帳簿」が残った！\nその帳簿を見た知人のオーナーから「真面目な君になら、うちの2号店の居抜きを格安で譲るよ」と声がかかる！",
+      adviceText: "融資ゼロから自力で実績と現金を残した勝利だニャ！次章はいよいよ自分の店での営業だ！",
+      choices: [
+        {
+          text: "🏆 第1章クリア（自力逆転オーナー編へ）",
+          action: () => { advanceDate(6, 15, 35); },
+          next: 'chapter1_clear'
+        }
+      ]
+    },
+
     chapter1_clear: {
       title: "🏆 第1章 クリア：資金調達・店舗契約編 完了",
-      text: "融資の実行、店舗契約、そして必要な機器・備品の調達準備を完了し、あなたは店舗オーナーとしての第一歩を踏み出しました！\n\n【次回アップデート予定】\n・オープン後の『一人親方かアルバイト雇用か』の選択\n・客単価×回転数のリアル営業シミュレーション",
+      text: "資金の確保、店舗の契約、そして必要な機器・備品の調達準備を完了し、あなたは店舗オーナーとしての第一歩を踏み出しました！\n\n【次回アップデート予定】\n・オープン後の『一人親方かアルバイト雇用か』の選択\n・客単価×回転数のリアル営業シミュレーション",
       adviceText: "素晴らしい経営判断だったニャ！次はオープン後の営業編でお会いしよう！",
       choices: [
-        { text: "🔄 最初から別の条件でプレイし直す", next: 'start' }
+        {
+          text: "🔄 最初から別の条件でプレイし直す",
+          action: () => { resetGameState(); },
+          next: 'start'
+        }
       ]
     }
   };
@@ -812,12 +904,12 @@
       });
     }
 
-    // ⭐️ シーン表示時の表示用アクション（モーダル表示等）のみここで実行
     if (scene.action) {
       scene.action();
     }
   }
 
+  resetGameState();
   renderScene('start');
 </script>
 </body>
